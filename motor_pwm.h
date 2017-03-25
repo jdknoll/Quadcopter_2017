@@ -25,5 +25,7 @@ void pwm_configuration();
 void pwm_gpio_configure();
 void TimerStart(int set_freq);
 
+extern int desired_height_cm;	// height for the copter
+
 
 #endif /* MOTOR_PWM_H_ */

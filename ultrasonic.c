@@ -11,7 +11,6 @@
 
 #include "driverlib/pin_map.h"
 #include "inc/hw_gpio.h"
-//#include "inc/tm4c123gh6pm.h"
 #include "inc/hw_i2c.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
@@ -39,7 +38,9 @@
 int interrupt_status = 0;
 int trigger_status = 0; //if high on trigger, 1 otherwise, 0
 
-int clock_timer = 0;
+volatile uint32_t clock_timer;
+int range_cm;
+int distance_cm;
 
 // Initialize function takes a variable to set frequency
 void inter_initialize()
@@ -55,7 +56,7 @@ void inter_initialize()
     // enable the interrupt
     ROM_IntEnable(INT_TIMER2A);
     ROM_TimerIntEnable(TIMER2_BASE, TIMER_TIMA_TIMEOUT);
-    ROM_IntPrioritySet(INT_TIMER2A,   0x20);	// set the priority lower than the pwm
+    ROM_IntPrioritySet(INT_TIMER2A,   0x20);    // set the priority lower than the pwm
     ROM_IntMasterEnable();
 
     // enable timer2A
@@ -72,41 +73,49 @@ void inter_initialize()
 
 void Timer2AIntHandler(void)
 {
-	// Clear the timer interrupt
-	ROM_TimerIntClear(TIMER2_BASE, TIMER_A);
+    // Clear the timer interrupt
+    ROM_TimerIntClear(TIMER2_BASE, TIMER_A);
 
-	// Send the 10 us trigger signal
-	if(trigger_status){
-		//if the trigger is high, set a timer for the low time and switch the signal
-		ROM_TimerLoadSet(TIMER2_BASE, TIMER_A, 800);
-		ROM_GPIOPinWrite(GPIO_PORTD_BASE, trigger, trigger);
-		trigger_status = ~trigger_status;
-	} else {
-		//if the trigger is low, set a timer for the high time and switch the signal
-		ROM_TimerLoadSet(TIMER2_BASE, TIMER_A, 20000000);
-		ROM_GPIOPinWrite(GPIO_PORTD_BASE, trigger, 1);
-		trigger_status = ~trigger_status;
-	}
-
+    // Send the 10 us trigger signal
+    if(trigger_status){
+        //if the trigger is high, set a timer for the low time and switch the signal
+        ROM_TimerLoadSet(TIMER2_BASE, TIMER_A, 800);
+        ROM_GPIOPinWrite(GPIO_PORTD_BASE, trigger, trigger);
+        trigger_status = ~trigger_status;
+    } else {
+        //if the trigger is low, set a timer for the high time and switch the signal
+        ROM_TimerLoadSet(TIMER2_BASE, TIMER_A, 20000000);
+        ROM_GPIOPinWrite(GPIO_PORTD_BASE, trigger, 1);
+        trigger_status = ~trigger_status;
+    }
 }
 
 
 //this will output how long the echo signal was high
 void PortDIntHandler(void)
 {
-	volatile uint32_t clock_timer;
+    volatile uint32_t clock_timer = 0;
     GPIOIntClear(GPIO_PORTD_BASE, echo);  // Clear interrupt flag
 
-	if(interrupt_status){				//if you're waiting for the echo to start
-		ROM_GPIOIntTypeSet(GPIO_PORTD_BASE, echo, GPIO_RISING_EDGE);
-		interrupt_status = ~interrupt_status;
-		clock_timer = ROM_SysTickValueGet();
-		ROM_UARTCharPut(UART0_BASE, '\n');
-	} else {
-		ROM_GPIOIntTypeSet(GPIO_PORTD_BASE, echo, GPIO_FALLING_EDGE);
-		interrupt_status = ~interrupt_status;
-		ROM_SysTickEnable();				//starts a 24 bit timer
-	}
+    if(interrupt_status){               //if you're waiting for the echo to start
+        ROM_GPIOIntTypeSet(GPIO_PORTD_BASE, echo, GPIO_RISING_EDGE);
+        interrupt_status = ~interrupt_status;
+        clock_timer = ROM_SysTickValueGet();
+        ROM_UARTCharPut(UART0_BASE, '\n');
+    } else {
+        ROM_GPIOIntTypeSet(GPIO_PORTD_BASE, echo, GPIO_FALLING_EDGE);
+        interrupt_status = ~interrupt_status;
+        ROM_SysTickEnable();                //starts a 24 bit timer
+    }
+}
+
+void distance_calculations(clock_timer)
+{
+//    distance_cm = 5;
+    //formula given by the ultrasonic data sheet for centimeters
+    distance_cm = clock_timer/58;
+    //formula given by the ultrasonic data sheet for range
+    //range_cm = (clock_timer * 340) / 2;
 }
 
 void initialize_gpio()

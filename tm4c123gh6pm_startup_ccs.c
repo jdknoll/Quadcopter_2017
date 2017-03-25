@@ -42,9 +42,13 @@ static void IntDefaultHandler(void);
 //*****************************************************************************
 extern void _c_int00(void);
 extern void UARTIntHandler(void);
-void Timer2AIntHandler(void);
-void PortDIntHandler(void);
-void pwm_interrupt();
+extern void Timer2AIntHandler(void);
+extern void PortDIntHandler(void);
+extern void pwm_interrupt();
+extern void pwm_interrupt2();
+extern void pwm_interrupt3();
+extern void pwm_interrupt4();
+
 
 //*****************************************************************************
 //
@@ -110,7 +114,7 @@ void (* const g_pfnVectors[])(void) =
 	IntDefaultHandler,                      // Timer 0 subtimer A
     IntDefaultHandler,                      // Timer 0 subtimer B
 	pwm_interrupt,                      	// Timer 1 subtimer A
-    IntDefaultHandler,                      // Timer 1 subtimer B
+	pwm_interrupt2,                      	// Timer 1 subtimer B
 	Timer2AIntHandler,                      // Timer 2 subtimer A
     IntDefaultHandler,                      // Timer 2 subtimer B
     IntDefaultHandler,                      // Analog Comparator 0
@@ -123,8 +127,8 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // GPIO Port H
     IntDefaultHandler,                      // UART2 Rx and Tx
     IntDefaultHandler,                      // SSI1 Rx and Tx
-    IntDefaultHandler,                      // Timer 3 subtimer A
-    IntDefaultHandler,                      // Timer 3 subtimer B
+	pwm_interrupt3,                      	// Timer 3 subtimer A
+	pwm_interrupt4,                      	// Timer 3 subtimer B
     IntDefaultHandler,                      // I2C1 Master and Slave
     IntDefaultHandler,                      // Quadrature Encoder 1
     IntDefaultHandler,                      // CAN0

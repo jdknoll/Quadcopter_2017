@@ -13,4 +13,6 @@ void Timer2AIntHandler(void);
 void PortDIntHandler(void);
 void initialize_gpio();
 
+extern int distance_cm;		//current height of quadcopter
+
 #endif /* ULTRASONIC_H_ */
