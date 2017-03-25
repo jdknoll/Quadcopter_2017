@@ -11,7 +11,6 @@
 #include <stdint.h>
 
 #include "parser.h"
-#include "tokenizer.h"
 #include "internalprogs.h"
 
 #include "t_uart.h"

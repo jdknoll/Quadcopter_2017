@@ -26,15 +26,7 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/rom.h"
 
-
-
-circbuff_t txbuff, rxbuff;
 int echo = 1; //by default, echo the input
-int send_xoff = 0;
-int send_xon = 0;
-int rcvd_xoff = 0;
-int eolfix = 1;
-int buffering = 0;
 
 /*
  * Handles the interrupt from a UART incoming communication
@@ -47,24 +39,11 @@ void UARTIntHandler(void)
     uint32_t ui32Status;
 	ui32Status = ROM_UARTIntStatus(UART0_BASE, true);
 
-
     while(ROM_UARTCharsAvail(UART0_BASE)) //loop while there are chars
     {
     	ch = ROM_UARTCharGetNonBlocking(UART0_BASE);
     	if(echo){
     		ROM_UARTCharPutNonBlocking(UART0_BASE, ch); //echo character
-    	}
-
-    	if (!circbuff_isfull(&rxbuff)) {
-    		circbuff_addch(&rxbuff, ch);
-    	}
-
-    	if (circbuff_almostfull(&rxbuff)) {
-    		send_xoff = 1;
-    	}
-
-    	if (ch == 'a'){
-    		UARTprintf("rf\n");
     	}
     }
 
@@ -102,12 +81,6 @@ void initUART(void){
     ROM_IntEnable(INT_UART0);
     ROM_UARTIntEnable(UART0_BASE, UART_INT_RX | UART_INT_RT);
     ROM_IntPrioritySet(INT_UART0,   0x20);	// set the priority lower than the pwm
-}
-/*
- * return true if the uart buffer contains data
- */
-int uart_haschar(){
-	return !circbuff_isempty(&rxbuff);
 }
 
 /*

@@ -14,7 +14,6 @@
 #include "../I2C.h"
 #include "t_uart.h"
 
-#include "tokenizer.h"
 #include "parser.h"
 #include "terminal.h"
 
@@ -28,16 +27,9 @@ int terminal(){
             UARTprintf("Goodbye\n");
         }
         if(out == 0) {
-            UARTprintf("\n");
+            UARTprintf("\n\r");
         }
     }
-    if(feof(stdin)){
-        UARTprintf("Goodbye\n");
-        return 0;
-    }
-//    else if(ferror(stdin)) {
-//        return 1;
-//    }
 	return 0;
 }
 
