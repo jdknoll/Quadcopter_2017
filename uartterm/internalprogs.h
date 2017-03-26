@@ -10,5 +10,6 @@ void printwidereg (char* reg);
 void printreg (char* reg);
 void accelx ();
 void testterm ();
+void matlab_pwm(char *pwm0, char *pwm1, char *pwm2, char *pwm3);
 
 #endif

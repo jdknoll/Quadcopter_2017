@@ -18,14 +18,11 @@
 #include "inc/tm4c123gh6pm.h"
 #include "driverlib/pin_map.h"
 #include "inc/hw_gpio.h"
-#include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/interrupt.h"
 #include "driverlib/gpio.h"
 #include "driverlib/timer.h"
-#include "driverlib/pwm.h"
-#include "driverlib/rom.h"
 
 #include "motor_pwm.h"
 #include "t_interrupt.h"
@@ -34,7 +31,11 @@
 
 //    int fade_Up = 1;
     unsigned long increment = 1;
-    unsigned long pwmNow = 1950;
+    int PWM_motor0 = 1950;
+    int PWM_motor1 = 1950;
+    int PWM_motor2 = 1950;
+    int PWM_motor3 = 1950;
+
 
     int desired_height_cm;
 
@@ -120,7 +121,7 @@ void TimerStart(int set_freq)
   /*
     Configure the timer as periodic, by omission it's in count down mode.
     It counts from the load value to 0 and then resets back to the load value.
-  REMEMBER: You need to configure the timer before setting the load and match
+    REMEMBER: You need to configure the timer before setting the load and match
   */
   ROM_TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC);
 
@@ -144,80 +145,24 @@ void TimerStart(int set_freq)
 // interrupt Handler for PWM speed
 void pwm_interrupt()
 {
-    // Set the starting value for desired height
-    desired_height_cm = 5;
-    distance_cm = 1;
-
-//    UARTprintf("distance_cm: %d\n", distance_cm);
-//    UARTprintf("pwmNow: %d\n\n", pwmNow);
-
     // Clear the timer interrupt
     TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
 
-    // Read the input data and adjust motor speed
-    // If calculated values are below set desired height, increase PWM duty cycle
-    if(desired_height_cm > distance_cm)
-      {
-        if(pwmNow <= 2250)
-        {
-            pwmNow += increment;
-            //distance_cm++;
-        }
-      }
-    // If calculated values are above set desired height, decrease PWM duty cylce
-    else if(desired_height_cm < distance_cm)
-      {
-        if(pwmNow >= 1950)
-        {
-            pwmNow -= increment;
-            //distance_cm--;
-        }
-      }
-    // If calculated values are equal to desired height, keep PWM duty cycle the same
-    else
-      {
-        pwmNow = pwmNow;
-      }
-
-/**
- * Original PWM code
- *
-//           // if read values are below set limits, set motor speed to increase
-//           if (fade_Up)
-//           {
-//               pwmNow += increment;
-//               if (pwmNow >= 2250)
-//               {
-//                   fade_Up = !fade_Up;
-//               }
-//           }
-//        }
-//           // If read values are above set limits, set motor speed to decreases
-//           else if(!fade_Up)
-//            {
-//                pwmNow -= increment;
-//                if (pwmNow <= 1950)
-//                {
-//                    fade_Up = !fade_Up;
-//                }
-//            }
-**/
     // Sets the adjusted speed to the PWM pins
-//    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,pwmNow);
-//    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,pwmNow);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,pwmNow);
-//    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7,pwmNow);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4, PWM_motor0);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5, PWM_motor1);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6, PWM_motor2);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7, PWM_motor3);
 }
 
 void TimerStart2(int set_freq)
 {
   ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER1);
-//  ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER3);
 
   /*
     Configure the timer as periodic, by omission it's in count down mode.
     It counts from the load value to 0 and then resets back to the load value.
-  REMEMBER: You need to configure the timer before setting the load and match
+    REMEMBER: You need to configure the timer before setting the load and match
   */
   ROM_TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC);
 
@@ -240,175 +185,12 @@ void TimerStart2(int set_freq)
 
 void pwm_interrupt2()
 {
-//    // Set the starting value for desired height
-//    desired_height_cm = 5;
-//
-//    // Clear the timer interrupt
-//    TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
-//
-//    // Read the input data and adjust motor speed
-//    // If calculated values are below set desired height, increase PWM duty cycle
-//    if(desired_height_cm > distance_cm)
-//      {
-//        if(pwmNow <= 2250)
-//        {
-//            pwmNow += increment;
-//            distance_cm++;
-//        }
-//      }
-//    // If calculated values are above set desired height, decrease PWM duty cylce
-//    else if(desired_height_cm < distance_cm)
-//      {
-//        if(pwmNow >= 1950)
-//        {
-//            pwmNow -= increment;
-//            distance_cm--;
-//        }
-//      }
-//    // If calculated values are equal to desired height, keep PWM duty cycle the same
-//    else
-//      {
-//        pwmNow = pwmNow;
-//      }
-//
-////    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,pwmNow);
-//    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,pwmNow);
-////    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,pwmNow);
-////    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7,pwmNow);
+    // Clear the timer interrupt
+    TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
+
+    UARTprintf("%d", distance_cm);
 }
 
-void TimerStart3(int set_freq)
-{
-//  ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER1);
-  ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER3);
 
-  /*
-    Configure the timer as periodic, by omission it's in count down mode.
-    It counts from the load value to 0 and then resets back to the load value.
-  REMEMBER: You need to configure the timer before setting the load and match
-  */
-  ROM_TimerConfigure(TIMER3_BASE, TIMER_CFG_PERIODIC);
 
-  //We set the load value so the timer interrupts
-  uint32_t freq =  ((ROM_SysCtlClockGet() / set_freq));
 
-  ROM_TimerLoadSet(TIMER3_BASE, TIMER_A, freq);
-
-  /*
-    Enable the timeout interrupt. In count down mode it's when the timer reaches
-  0 and resets back to load. In count up mode it's when the timer reaches load
-  and resets back to 0.
-  */
-  //IntMasterEnable();  //Interrupts are enabled in main
-  ROM_IntEnable(INT_TIMER3A);
-  ROM_TimerIntEnable(TIMER3_BASE, TIMER_TIMA_TIMEOUT);
-  ROM_TimerEnable(TIMER3_BASE, TIMER_A);
-  ROM_IntPrioritySet(INT_TIMER3A, INT_PRIORITY_LEVEL_0);    //set the timer priority to the top priority
-}
-
-void pwm_interrupt3()
-{
-//    // Set the starting value for desired height
-//    desired_height_cm = 5;
-//
-//    // Clear the timer interrupt
-//    TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
-//
-//    // Read the input data and adjust motor speed
-//    // If calculated values are below set desired height, increase PWM duty cycle
-//    if(desired_height_cm > distance_cm)
-//      {
-//        if(pwmNow <= 2250)
-//        {
-//            pwmNow += increment;
-//            distance_cm++;
-//        }
-//      }
-//    // If calculated values are above set desired height, decrease PWM duty cylce
-//    else if(desired_height_cm < distance_cm)
-//      {
-//        if(pwmNow >= 1950)
-//        {
-//            pwmNow -= increment;
-//            distance_cm--;
-//        }
-//      }
-//    // If calculated values are equal to desired height, keep PWM duty cycle the same
-//    else
-//      {
-//        pwmNow = pwmNow;
-//      }
-
-////    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,pwmNow);
-////    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,pwmNow);
-//    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,pwmNow);
-////    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7,pwmNow);
-}
-
-void TimerStart4(int set_freq)
-{
-//  ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER1);
-  ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER3);
-
-  /*
-    Configure the timer as periodic, by omission it's in count down mode.
-    It counts from the load value to 0 and then resets back to the load value.
-  REMEMBER: You need to configure the timer before setting the load and match
-  */
-  ROM_TimerConfigure(TIMER3_BASE, TIMER_CFG_PERIODIC);
-
-  //We set the load value so the timer interrupts
-  uint32_t freq =  ((ROM_SysCtlClockGet() / set_freq));
-
-  ROM_TimerLoadSet(TIMER3_BASE, TIMER_B, freq);
-
-  /*
-    Enable the timeout interrupt. In count down mode it's when the timer reaches
-  0 and resets back to load. In count up mode it's when the timer reaches load
-  and resets back to 0.
-  */
-  //IntMasterEnable();  //Interrupts are enabled in main
-  ROM_IntEnable(INT_TIMER3B);
-  ROM_TimerIntEnable(TIMER3_BASE, TIMER_TIMB_TIMEOUT);
-  ROM_TimerEnable(TIMER3_BASE, TIMER_B);
-  ROM_IntPrioritySet(INT_TIMER3B, INT_PRIORITY_LEVEL_0);    //set the timer priority to the top priority
-}
-
-void pwm_interrupt4()
-{
-//    // Set the starting value for desired height
-//    desired_height_cm = 5;
-//
-//    // Clear the timer interrupt
-//    TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
-//
-//    // Read the input data and adjust motor speed
-//    // If calculated values are below set desired height, increase PWM duty cycle
-//    if(desired_height_cm > distance_cm)
-//      {
-//        if(pwmNow <= 2250)
-//        {
-//            pwmNow += increment;
-//            distance_cm++;
-//        }
-//      }
-//    // If calculated values are above set desired height, decrease PWM duty cylce
-//    else if(desired_height_cm < distance_cm)
-//      {
-//        if(pwmNow >= 1950)
-//        {
-//            pwmNow -= increment;
-//            distance_cm--;
-//        }
-//      }
-//    // If calculated values are equal to desired height, keep PWM duty cycle the same
-//    else
-//      {
-//        pwmNow = pwmNow;
-//      }
-//
-//////    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,pwmNow);
-//////    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,pwmNow);
-//////    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,pwmNow);
-//    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7,pwmNow);
-}

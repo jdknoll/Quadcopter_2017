@@ -28,14 +28,21 @@
 #include "ultrasonic.h"
 #include "uartterm/t_uart.h"
 #include "t_interrupt.h"
+#include "inc/hw_timer.h"
+#include "ftoa.h"
 
-#define TRIGGER_PIN 		GPIO_PIN_6
-#define TRIGGER_BASE 		GPIO_PORTD_BASE
-#define TRIGGER_PERIPHERAL	SYSCTL_PERIPH_GPIOD
+#define TRIGGER_PIN 			GPIO_PIN_6
+#define TRIGGER_BASE 			GPIO_PORTD_BASE
+#define TRIGGER_PERIPHERAL		SYSCTL_PERIPH_GPIOD
 
-#define ECHO_PIN 			GPIO_INT_PIN_7
-#define ECHO_BASE 			GPIO_PORTC_BASE
-#define ECHO_PERIPHERAL		SYSCTL_PERIPH_GPIOC
+#define ECHO_PIN 				GPIO_INT_PIN_7
+#define ECHO_BASE 				GPIO_PORTC_BASE
+#define ECHO_PERIPHERAL			SYSCTL_PERIPH_GPIOC
+
+#define ECHO_TIMER_BASE			TIMER5_BASE
+#define ECHO_TIMER_PERIPHERAL	SYSCTL_PERIPH_TIMER5
+#define ECHO_TIMER				TIMER_A
+
 
 #define TIMERA_FREQ 20000000
 #define HIGH 1
@@ -46,7 +53,9 @@ int trigger_status = 0; //if high on trigger, 1 otherwise, 0
 
 volatile uint32_t clock_timer;
 int range_cm;
-int distance_cm;
+double distance_cm;
+
+char distance_string[50];
 
 void ultrasonicTriggerTimerHandler(void)
 {
@@ -67,33 +76,44 @@ void ultrasonicTriggerTimerHandler(void)
     }
 }
 
+
 void distance_calculations(uint32_t clock_timer)
 {
 //    distance_cm = 5;
     //formula given by the ultrasonic data sheet for centimeters
-    distance_cm = clock_timer/58;
+    distance_cm = ((double)clock_timer/80)/58;
     //formula given by the ultrasonic data sheet for range
     //range_cm = (clock_timer * 340) / 2;
+    ftoa(distance_cm, distance_string, 3);
 }
 
 
 //this will output how long the echo signal was high
+//pull clock reading information from a TI QA: https://e2e.ti.com/support/microcontrollers/tiva_arm/f/908/t/256323
 void ultrasonicEchoHandler(void)
 {
-    volatile uint32_t clock_timer = 0;
-    GPIOIntClear(ECHO_BASE, ECHO_PIN);  // Clear interrupt flag
-    UARTprintf("holy shit it worked!\n");
+	int clock_timer;
 
-    if(interrupt_status){               // this trigger occurs when echo is high going low - measure here
-        clock_timer = ROM_SysTickValueGet();
+    GPIOIntClear(ECHO_BASE, ECHO_PIN);  // Clear interrupt flag
+    bool value = GPIOPinRead(ECHO_BASE, ECHO_PIN);
+
+    if(value){               				// this trigger occurs when echo is high going low - measure here
+    	//ROM_SysTickEnable();                //starts a 24 bit timer
+    	ROM_TimerDisable(ECHO_TIMER_BASE, ECHO_TIMER);
+    	HWREG(ECHO_TIMER_BASE + TIMER_O_TAV) = 0;			// GPTM Timer A Value set to 0
+    	ROM_TimerLoadSet(ECHO_TIMER_BASE, ECHO_TIMER,  0xFFFFFFFF);
+    	ROM_TimerEnable(ECHO_TIMER_BASE, ECHO_TIMER);
+    } else {								// this trigger occurs when the echo is low going high
+    	//ROM_IntDisable(INT_WTIMER1A);
+    	//ROM_TimerIntDisable(ECHO_TIMER_BASE, TIMER_TIMA_TIMEOUT);
+    	ROM_TimerDisable(ECHO_TIMER_BASE, ECHO_TIMER);
+
+    	clock_timer = ROM_TimerValueGet(ECHO_TIMER_BASE, ECHO_TIMER);
+
+    	//clock_timer = ROM_SysTickValueGet();
         distance_calculations(clock_timer);
-        ROM_GPIOIntTypeSet(ECHO_BASE, ECHO_PIN, GPIO_RISING_EDGE);
-        interrupt_status = ~interrupt_status;
-        UARTprintf("clock_timer: %d", clock_timer);
-    } else {							// this trigger occurs when the echo is low going high
-        ROM_GPIOIntTypeSet(ECHO_BASE, ECHO_PIN, GPIO_FALLING_EDGE);
-        interrupt_status = ~interrupt_status;
-        ROM_SysTickEnable();                //starts a 24 bit timer
+
+        UARTprintf("%s\n", distance_string);
     }
 }
 
@@ -118,6 +138,11 @@ void initialize_ultrasonic()
     ROM_TimerEnable(TIMER2_BASE, TIMER_A);					// enable timer2A
 
 
+    // initialize the echo timer
+    ROM_SysCtlPeripheralEnable(ECHO_TIMER_PERIPHERAL);
+    ROM_SysCtlPeripheralReset(ECHO_TIMER_PERIPHERAL);
+    ROM_TimerConfigure(ECHO_TIMER_BASE, TIMER_CFG_ONE_SHOT_UP);
+    ROM_TimerControlStall(ECHO_TIMER_BASE, ECHO_TIMER, true);
 
     // then initialize the echo GPIO
     ROM_SysCtlPeripheralEnable(ECHO_PERIPHERAL);
@@ -126,12 +151,10 @@ void initialize_ultrasonic()
     ROM_GPIOPinTypeGPIOInput(ECHO_BASE, ECHO_PIN);
 
     // enable the GPIO driven interrupts using the sonic echo as a flag
-    ROM_GPIOIntTypeSet(ECHO_BASE, ECHO_PIN, GPIO_RISING_EDGE);
+    ROM_GPIOIntTypeSet(ECHO_BASE, ECHO_PIN, GPIO_BOTH_EDGES);
     GPIOIntEnable(ECHO_BASE, ECHO_PIN);
+    GPIOIntClear(ECHO_BASE, ECHO_PIN);  // Clear interrupt flag
 
-    uint32_t status = 0;
-    status = GPIOIntStatus(ECHO_BASE, true);
-
-    GPIOIntClear(ECHO_BASE, status);
-    //ROM_IntEnable(INT_GPIOD);
+    ROM_IntEnable(INT_GPIOC);
+    ROM_IntPrioritySet(INT_GPIOC, INT_PRIORITY_LEVEL_1);	// set the priority lower than the pwm
 }

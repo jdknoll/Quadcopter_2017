@@ -12,6 +12,6 @@ void ultrasonicTriggerTimerHandler(void);
 void ultrasonicEchoHandler(void);
 void initialize_ultrasonic();
 
-extern int distance_cm;		//current height of quadcopter
+extern double distance_cm;		//current height of quadcopter
 
 #endif /* ULTRASONIC_H_ */

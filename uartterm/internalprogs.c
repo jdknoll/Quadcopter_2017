@@ -13,6 +13,7 @@
 #include "../I2C.h"
 
 #include "terminal.h"
+#include "../motor_pwm.h"
 
 
 #define GYRO_XOUT_H 0x43
@@ -46,5 +47,22 @@ void printwidereg (char* reg) {
 
 void testterm () {
 	UARTprintf("test_successful");
+}
+
+void matlab_pwm(char *pwm0, char *pwm1, char *pwm2, char *pwm3) {
+	int pwm0_int = atoi(pwm0);
+	int pwm1_int = atoi(pwm1);
+	int pwm2_int = atoi(pwm2);
+	int pwm3_int = atoi(pwm3);
+
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,PWM_motor0);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,PWM_motor1);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,PWM_motor2);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7,PWM_motor3);
+}
+
+void matlab_req(){
+
+	UARTprintf("");
 }
 

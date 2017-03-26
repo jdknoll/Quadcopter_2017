@@ -39,6 +39,8 @@ int parser(char* input0) {
         printwidereg(strtok(NULL, " "));
     } else if(strcmp(token, "testterm") == 0) {
     		testterm();
+    } else if(strcmp(token, "matlab_pwm") == 0) {
+    	matlab_pwm(strtok(NULL, " "), strtok(NULL, " "), strtok(NULL, " "), strtok(NULL, " "));
     } else {
     	UARTprintf("incorrect input");
     	return -1;

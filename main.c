@@ -68,7 +68,8 @@ int main(void)
     arm_the_motor();
 
     // initialize pwm timer
-    TimerStart(100);
+    //TimerStart(100);
+    //TimerStart2(100);
 
     // initialize the UART
     initUART();
