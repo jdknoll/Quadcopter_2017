@@ -93,7 +93,7 @@ int main(void)
     // Testing Loop
     while(1)
     {
-    	//terminal();
+    	terminal();
     	//QueryAccel();	//prints out accelerometer data
 
         //wait(100000);

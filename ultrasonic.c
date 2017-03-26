@@ -113,7 +113,7 @@ void ultrasonicEchoHandler(void)
     	//clock_timer = ROM_SysTickValueGet();
         distance_calculations(clock_timer);
 
-        UARTprintf("%s\n", distance_string);
+        //UARTprintf("%s\n", distance_string);
     }
 }
 

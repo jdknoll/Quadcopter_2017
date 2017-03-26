@@ -13,5 +13,6 @@ void ultrasonicEchoHandler(void);
 void initialize_ultrasonic();
 
 extern double distance_cm;		//current height of quadcopter
+extern char distance_string[50];
 
 #endif /* ULTRASONIC_H_ */

@@ -14,6 +14,7 @@
 
 #include "terminal.h"
 #include "../motor_pwm.h"
+#include "../ultrasonic.h"
 
 
 #define GYRO_XOUT_H 0x43
@@ -49,20 +50,38 @@ void testterm () {
 	UARTprintf("test_successful");
 }
 
+// set all PWM's to the arguments given to the matlab_pwm command
 void matlab_pwm(char *pwm0, char *pwm1, char *pwm2, char *pwm3) {
 	int pwm0_int = atoi(pwm0);
 	int pwm1_int = atoi(pwm1);
 	int pwm2_int = atoi(pwm2);
 	int pwm3_int = atoi(pwm3);
 
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,PWM_motor0);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,PWM_motor1);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,PWM_motor2);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7,PWM_motor3);
+	if ((pwm0_int >= 5000) || (pwm1_int >= 5000) || (pwm2_int >= 5000) || (pwm3_int >= 5000)){
+		return;
+	}
+
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,pwm0_int);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,pwm1_int);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,pwm2_int);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7,pwm3_int);
+}
+
+//set all PWM's to the argument given to the m command
+void pwm_all(char *pwm){
+	int pwm_int = atoi(pwm);
+
+	if (pwm_int >= 5000){
+			return;
+	}
+
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,pwm_int);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,pwm_int);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,pwm_int);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7,pwm_int);
 }
 
 void matlab_req(){
-
-	UARTprintf("");
+	UARTprintf("%s\n", distance_string);
 }
 
