@@ -10,7 +10,14 @@ Please do the following to link TivaWare:
 2. Click Properties
 3. Under Build->Variables(tab), change TIVAWARE_INSTALL to where you installed your SW-TM4C package.
 
+The DriverLib will also have to be included if you are going to use TivaWare packages
+1. Right click on the project name
+2. Click Import -> Import File system
+3. Open the TIVAWARE_INSTALL/driverlib/ccs/Debug directory
+4. Import driverlib.lib - this can be linked or copied
+
 The uartstdio.c and uartstdio.h files will need to be re-linked
+Because of the way CCS interprets these files, they will need to be linked rather than copied.
 1. Right click on the project
 2. Click import - under general click File System
 3. Under your TivaWare install select utils

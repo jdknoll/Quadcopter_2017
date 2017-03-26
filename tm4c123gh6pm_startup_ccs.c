@@ -42,8 +42,8 @@ static void IntDefaultHandler(void);
 //*****************************************************************************
 extern void _c_int00(void);
 extern void UARTIntHandler(void);
-extern void Timer2AIntHandler(void);
-extern void PortDIntHandler(void);
+extern void ultrasonicTriggerTimerHandler(void);
+extern void ultrasonicEchoHandler(void);
 extern void pwm_interrupt();
 extern void pwm_interrupt2();
 extern void pwm_interrupt3();
@@ -94,8 +94,8 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // The SysTick handler
     IntDefaultHandler,                      // GPIO Port A
     IntDefaultHandler,                      // GPIO Port B
-    IntDefaultHandler,                      // GPIO Port C
-	PortDIntHandler,                        // GPIO Port D
+	ultrasonicEchoHandler,                  // GPIO Port C
+	IntDefaultHandler,                  	// GPIO Port D
     IntDefaultHandler,                      // GPIO Port E
     UARTIntHandler,                         // UART0 Rx and Tx
     IntDefaultHandler,                      // UART1 Rx and Tx
@@ -115,7 +115,7 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // Timer 0 subtimer B
 	pwm_interrupt,                      	// Timer 1 subtimer A
 	pwm_interrupt2,                      	// Timer 1 subtimer B
-	Timer2AIntHandler,                      // Timer 2 subtimer A
+	ultrasonicTriggerTimerHandler,          // Timer 2 subtimer A
     IntDefaultHandler,                      // Timer 2 subtimer B
     IntDefaultHandler,                      // Analog Comparator 0
     IntDefaultHandler,                      // Analog Comparator 1

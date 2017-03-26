@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "driverlib/uart.h"
+#include "utils/uartstdio.h"
 
 #ifndef T_UART_H_
 #define T_UART_H_

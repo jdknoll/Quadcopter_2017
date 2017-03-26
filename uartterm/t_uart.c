@@ -12,8 +12,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "utils/uartstdio.h"
-
 #include "inc/hw_i2c.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
@@ -25,6 +23,8 @@
 #include "driverlib/pin_map.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/rom.h"
+
+#include "t_uart.h"
 
 int echo = 1; //by default, echo the input
 

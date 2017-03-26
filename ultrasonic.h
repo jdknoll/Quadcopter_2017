@@ -8,10 +8,9 @@
 #ifndef ULTRASONIC_H_
 #define ULTRASONIC_H_
 
-void inter_initialize();
-void Timer2AIntHandler(void);
-void PortDIntHandler(void);
-void initialize_gpio();
+void ultrasonicTriggerTimerHandler(void);
+void ultrasonicEchoHandler(void);
+void initialize_ultrasonic();
 
 extern int distance_cm;		//current height of quadcopter
 

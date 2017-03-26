@@ -86,18 +86,19 @@ int main(void)
     PrintAccelConfigReg();
 
     // Initialize the GPIO for the sonic distance
-	initialize_gpio();
-	inter_initialize();
+    initialize_ultrasonic();
 
 
     // Testing Loop
     while(1)
     {
-    	terminal();
+    	//terminal();
     	//QueryAccel();	//prints out accelerometer data
 
         //wait(100000);
         //UARTCharPut(UART0_BASE, '\n');
+
+
     }
 }
 

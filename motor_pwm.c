@@ -30,6 +30,7 @@
 #include "motor_pwm.h"
 #include "t_interrupt.h"
 #include "ultrasonic.h"
+#include "uartterm/t_uart.h"
 
 //    int fade_Up = 1;
     unsigned long increment = 1;
@@ -145,6 +146,10 @@ void pwm_interrupt()
 {
     // Set the starting value for desired height
     desired_height_cm = 5;
+    distance_cm = 1;
+
+//    UARTprintf("distance_cm: %d\n", distance_cm);
+//    UARTprintf("pwmNow: %d\n\n", pwmNow);
 
     // Clear the timer interrupt
     TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
@@ -198,9 +203,9 @@ void pwm_interrupt()
 //            }
 **/
     // Sets the adjusted speed to the PWM pins
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,pwmNow);
+//    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,pwmNow);
 //    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,pwmNow);
-//    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,pwmNow);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,pwmNow);
 //    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7,pwmNow);
 }
 
@@ -235,41 +240,41 @@ void TimerStart2(int set_freq)
 
 void pwm_interrupt2()
 {
-    // Set the starting value for desired height
-    desired_height_cm = 5;
-
-    // Clear the timer interrupt
-    TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
-
-    // Read the input data and adjust motor speed
-    // If calculated values are below set desired height, increase PWM duty cycle
-    if(desired_height_cm > distance_cm)
-      {
-        if(pwmNow <= 2250)
-        {
-            pwmNow += increment;
-            distance_cm++;
-        }
-      }
-    // If calculated values are above set desired height, decrease PWM duty cylce
-    else if(desired_height_cm < distance_cm)
-      {
-        if(pwmNow >= 1950)
-        {
-            pwmNow -= increment;
-            distance_cm--;
-        }
-      }
-    // If calculated values are equal to desired height, keep PWM duty cycle the same
-    else
-      {
-        pwmNow = pwmNow;
-      }
-
-//    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,pwmNow);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,pwmNow);
-//    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,pwmNow);
-//    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7,pwmNow);
+//    // Set the starting value for desired height
+//    desired_height_cm = 5;
+//
+//    // Clear the timer interrupt
+//    TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
+//
+//    // Read the input data and adjust motor speed
+//    // If calculated values are below set desired height, increase PWM duty cycle
+//    if(desired_height_cm > distance_cm)
+//      {
+//        if(pwmNow <= 2250)
+//        {
+//            pwmNow += increment;
+//            distance_cm++;
+//        }
+//      }
+//    // If calculated values are above set desired height, decrease PWM duty cylce
+//    else if(desired_height_cm < distance_cm)
+//      {
+//        if(pwmNow >= 1950)
+//        {
+//            pwmNow -= increment;
+//            distance_cm--;
+//        }
+//      }
+//    // If calculated values are equal to desired height, keep PWM duty cycle the same
+//    else
+//      {
+//        pwmNow = pwmNow;
+//      }
+//
+////    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,pwmNow);
+//    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,pwmNow);
+////    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,pwmNow);
+////    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7,pwmNow);
 }
 
 void TimerStart3(int set_freq)
@@ -303,41 +308,41 @@ void TimerStart3(int set_freq)
 
 void pwm_interrupt3()
 {
-    // Set the starting value for desired height
-    desired_height_cm = 5;
+//    // Set the starting value for desired height
+//    desired_height_cm = 5;
+//
+//    // Clear the timer interrupt
+//    TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
+//
+//    // Read the input data and adjust motor speed
+//    // If calculated values are below set desired height, increase PWM duty cycle
+//    if(desired_height_cm > distance_cm)
+//      {
+//        if(pwmNow <= 2250)
+//        {
+//            pwmNow += increment;
+//            distance_cm++;
+//        }
+//      }
+//    // If calculated values are above set desired height, decrease PWM duty cylce
+//    else if(desired_height_cm < distance_cm)
+//      {
+//        if(pwmNow >= 1950)
+//        {
+//            pwmNow -= increment;
+//            distance_cm--;
+//        }
+//      }
+//    // If calculated values are equal to desired height, keep PWM duty cycle the same
+//    else
+//      {
+//        pwmNow = pwmNow;
+//      }
 
-    // Clear the timer interrupt
-    TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
-
-    // Read the input data and adjust motor speed
-    // If calculated values are below set desired height, increase PWM duty cycle
-    if(desired_height_cm > distance_cm)
-      {
-        if(pwmNow <= 2250)
-        {
-            pwmNow += increment;
-            distance_cm++;
-        }
-      }
-    // If calculated values are above set desired height, decrease PWM duty cylce
-    else if(desired_height_cm < distance_cm)
-      {
-        if(pwmNow >= 1950)
-        {
-            pwmNow -= increment;
-            distance_cm--;
-        }
-      }
-    // If calculated values are equal to desired height, keep PWM duty cycle the same
-    else
-      {
-        pwmNow = pwmNow;
-      }
-
-//    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,pwmNow);
-//    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,pwmNow);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,pwmNow);
-//    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7,pwmNow);
+////    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,pwmNow);
+////    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,pwmNow);
+//    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,pwmNow);
+////    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7,pwmNow);
 }
 
 void TimerStart4(int set_freq)
@@ -371,39 +376,39 @@ void TimerStart4(int set_freq)
 
 void pwm_interrupt4()
 {
-    // Set the starting value for desired height
-    desired_height_cm = 5;
-
-    // Clear the timer interrupt
-    TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
-
-    // Read the input data and adjust motor speed
-    // If calculated values are below set desired height, increase PWM duty cycle
-    if(desired_height_cm > distance_cm)
-      {
-        if(pwmNow <= 2250)
-        {
-            pwmNow += increment;
-            distance_cm++;
-        }
-      }
-    // If calculated values are above set desired height, decrease PWM duty cylce
-    else if(desired_height_cm < distance_cm)
-      {
-        if(pwmNow >= 1950)
-        {
-            pwmNow -= increment;
-            distance_cm--;
-        }
-      }
-    // If calculated values are equal to desired height, keep PWM duty cycle the same
-    else
-      {
-        pwmNow = pwmNow;
-      }
-
-//    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,pwmNow);
-//    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,pwmNow);
-//    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,pwmNow);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7,pwmNow);
+//    // Set the starting value for desired height
+//    desired_height_cm = 5;
+//
+//    // Clear the timer interrupt
+//    TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
+//
+//    // Read the input data and adjust motor speed
+//    // If calculated values are below set desired height, increase PWM duty cycle
+//    if(desired_height_cm > distance_cm)
+//      {
+//        if(pwmNow <= 2250)
+//        {
+//            pwmNow += increment;
+//            distance_cm++;
+//        }
+//      }
+//    // If calculated values are above set desired height, decrease PWM duty cylce
+//    else if(desired_height_cm < distance_cm)
+//      {
+//        if(pwmNow >= 1950)
+//        {
+//            pwmNow -= increment;
+//            distance_cm--;
+//        }
+//      }
+//    // If calculated values are equal to desired height, keep PWM duty cycle the same
+//    else
+//      {
+//        pwmNow = pwmNow;
+//      }
+//
+//////    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,pwmNow);
+//////    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,pwmNow);
+//////    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,pwmNow);
+//    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7,pwmNow);
 }
