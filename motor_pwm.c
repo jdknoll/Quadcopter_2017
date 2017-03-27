@@ -28,6 +28,9 @@
 #include "t_interrupt.h"
 #include "ultrasonic.h"
 #include "uartterm/t_uart.h"
+#include "altitude_pid.h"
+
+	uint32_t freq;
 
 //    int fade_Up = 1;
     unsigned long increment = 1;
@@ -126,7 +129,7 @@ void TimerStart(int set_freq)
   ROM_TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC);
 
   //We set the load value so the timer interrupts
-  uint32_t freq =  ((ROM_SysCtlClockGet() / set_freq));
+  freq =  ((ROM_SysCtlClockGet() / set_freq));
 
   ROM_TimerLoadSet(TIMER1_BASE, TIMER_A, freq);
 
@@ -142,17 +145,47 @@ void TimerStart(int set_freq)
   ROM_IntPrioritySet(INT_TIMER1A, INT_PRIORITY_LEVEL_0);    //set the timer priority to the top priority
 }
 
+int pwm_saturate_add(int a, int b){
+	int output = a + b;
+	if(output > 2250){
+		return 2250;
+	} else  if (output < 1950){
+		return 1950;
+	} else {
+		return output;
+	}
+}
+
 // interrupt Handler for PWM speed
 void pwm_interrupt()
 {
     // Clear the timer interrupt
     TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
+	double error;
+
+	error = pid.set_point - distance_cm;
+
+	//call the PID loop to give updates on altitude
+	pid_update(error, 1/freq);
+
+	PWM_motor0 = pwm_saturate_add(PWM_motor0, pid.control);
+	PWM_motor1 = pwm_saturate_add(PWM_motor1, pid.control);
+	PWM_motor2 = pwm_saturate_add(PWM_motor2, pid.control);
+	PWM_motor3 = pwm_saturate_add(PWM_motor3, pid.control);
+
 
     // Sets the adjusted speed to the PWM pins
  //   ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4, PWM_motor0);
     ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5, PWM_motor1);
     ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6, PWM_motor2);
     ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7, PWM_motor3);
+
+    UARTprintf("PID Control: %d", pid.control);
+    UARTprintf("PWM_motor0 %d\n", PWM_motor0);
+    int test_cm = (int) distance_cm;
+    UARTprintf("Distance cm: %d\n", test_cm);
+    int test_error = (int) error;
+    UARTprintf("Error: %d\n", test_error);
 }
 
 void TimerStart2(int set_freq)

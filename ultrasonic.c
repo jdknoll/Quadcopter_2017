@@ -86,7 +86,7 @@ void distance_calculations(uint32_t clock_timer)
 
     //formula given by the ultrasonic data sheet for range
     //range_cm = (clock_timer * 340) / 2;
-    ftoa(distance_cm, distance_string, 3);
+    //ftoa(distance_cm, distance_string, 3);
 }
 
 
@@ -115,7 +115,7 @@ void ultrasonicEchoHandler(void)
     	//clock_timer = ROM_SysTickValueGet();
         distance_calculations(clock_timer);
 
-        UARTprintf("%d\n", distance_string);
+        //UARTprintf("%d\n", distance_string);
     }
 }
 

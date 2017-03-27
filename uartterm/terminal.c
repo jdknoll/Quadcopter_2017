@@ -55,6 +55,10 @@ int parser(char* input0) {
     	matlab_req();
     } else if(strcmp(token, "m") == 0){
     	pwm_all(strtok(NULL, " "));
+    } else if(strcmp(token, "fuck") == 0){						// command to make the fan setup float in the 1D setup
+    	if (strcmp(strtok(NULL, " "), "it") == 0){
+    		float_it();
+    	}
     } else {
     	UARTprintf("incorrect input");
     	free(input);
