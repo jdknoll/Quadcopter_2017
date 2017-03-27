@@ -81,10 +81,10 @@ int main(void)
     InitializeAccel();
 
     // Print out the WHO_AM_I register
-    PrintAccelWhoAmI();
+    //PrintAccelWhoAmI();
 
     // Print the accelerometer's configuration bits
-    PrintAccelConfigReg();
+    //PrintAccelConfigReg();
 
     // Initialize the GPIO for the sonic distance
     initialize_ultrasonic();

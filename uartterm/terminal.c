@@ -14,8 +14,9 @@
 #include "t_uart.h"
 #include "internalprogs.h"
 
-#include "parser.h"
 #include "terminal.h"
+
+int parser(char* input0);
 
 int terminal(){
     char input[MAXLINE];

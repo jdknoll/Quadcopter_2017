@@ -61,7 +61,7 @@ void matlab_pwm(char *pwm0, char *pwm1, char *pwm2, char *pwm3) {
 		return;
 	}
 
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,pwm0_int);
+    //ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,pwm0_int);
     ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,pwm1_int);
     ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,pwm2_int);
     ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7,pwm3_int);
@@ -75,13 +75,13 @@ void pwm_all(char *pwm){
 			return;
 	}
 
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,pwm_int);
+    //ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,pwm_int);
     ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,pwm_int);
     ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,pwm_int);
     ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7,pwm_int);
 }
 
 void matlab_req(){
-	UARTprintf("%s\n", distance_string);
+	UARTprintf("\n%s", distance_string);
 }
 

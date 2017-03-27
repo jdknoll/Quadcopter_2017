@@ -70,7 +70,7 @@ void ultrasonicTriggerTimerHandler(void)
         trigger_status = ~trigger_status;
     } else {
         //if the trigger is low, set a timer for the high time and switch the signal
-        ROM_TimerLoadSet(TIMER2_BASE, TIMER_A, 2000000);
+        ROM_TimerLoadSet(TIMER2_BASE, TIMER_A, 1892800); // calculated to guarantee that trigger shouldn't run while echo is high
         ROM_GPIOPinWrite(GPIO_PORTD_BASE, TRIGGER_PIN, 1);
         trigger_status = ~trigger_status;
     }
@@ -81,7 +81,9 @@ void distance_calculations(uint32_t clock_timer)
 {
 //    distance_cm = 5;
     //formula given by the ultrasonic data sheet for centimeters
+    //distance_cm = ((double)clock_timer/80)/58;
     distance_cm = ((double)clock_timer/80)/58;
+
     //formula given by the ultrasonic data sheet for range
     //range_cm = (clock_timer * 340) / 2;
     ftoa(distance_cm, distance_string, 3);
@@ -113,7 +115,7 @@ void ultrasonicEchoHandler(void)
     	//clock_timer = ROM_SysTickValueGet();
         distance_calculations(clock_timer);
 
-        //UARTprintf("%s\n", distance_string);
+        UARTprintf("%d\n", distance_string);
     }
 }
 
