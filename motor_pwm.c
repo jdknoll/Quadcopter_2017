@@ -47,13 +47,14 @@ void delaySEC(int sec)
 void pwm_gpio_configure()
 {
     // Configure the PF# pins as Pulse Width Modulation
-//    ROM_GPIOPinConfigure(GPIO_PF0_M1PWM4);
+    ROM_GPIOPinConfigure(GPIO_PD0_M1PWM0);
+    ROM_GPIOPinConfigure(GPIO_PD1_M1PWM2);
     ROM_GPIOPinConfigure(GPIO_PF1_M1PWM5);
     ROM_GPIOPinConfigure(GPIO_PF2_M1PWM6);
-    ROM_GPIOPinConfigure(GPIO_PF3_M1PWM7);
 
     // Configures the pins as Pulse Width Modulation
-    ROM_GPIOPinTypePWM(GPIO_PORTF_BASE, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
+    ROM_GPIOPinTypePWM(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2);
+    ROM_GPIOPinTypePWM(GPIO_PORTD_BASE, GPIO_PIN_0|GPIO_PIN_);
 }
 
 void pwm_configuration()
@@ -63,33 +64,35 @@ void pwm_configuration()
     ROM_SysCtlPWMClockSet(SYSCTL_PWMDIV_8);
 
     // Configure PWM Options
+    // PWM_GEN_0 Covers M1PWM0 and M1PWM1
+    // PWM_GEN_1 Covers M1PWM2 and M1PWM3
     // PWM_GEN_2 Covers M1PWM4 and M1PWM5
-    // PWM_GEN_3 Covers M1PWM6 and M1PWM7 See page 207 4/11/13 DriverLib doc
- //   ROM_PWMGenConfigure(PWM1_BASE, PWM_GEN_0, PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
+    // PWM_GEN_3 Covers M1PWM6 and M1PWM7 See page 417 DriverLib doc
+    ROM_PWMGenConfigure(PWM1_BASE, PWM_GEN_0, PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
     ROM_PWMGenConfigure(PWM1_BASE, PWM_GEN_1, PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
     ROM_PWMGenConfigure(PWM1_BASE, PWM_GEN_2, PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
     ROM_PWMGenConfigure(PWM1_BASE, PWM_GEN_3, PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
 
     // Set the Period (expressed in clock ticks)
- //   ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_0, 5000);
+    ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_0, 5000);
     ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_1, 5000);
     ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_2, 5000);
     ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_3, 5000);
 
     // Set PWM duty-50%
- //   ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,1950);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_0,1950);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_2,1950);
     ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,1950);
     ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,1950);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7,1950);
 
     // Enable the PWM generator
- //   ROM_PWMGenEnable(PWM1_BASE, PWM_GEN_0);
+    ROM_PWMGenEnable(PWM1_BASE, PWM_GEN_0);
     ROM_PWMGenEnable(PWM1_BASE, PWM_GEN_1);
     ROM_PWMGenEnable(PWM1_BASE, PWM_GEN_2);
     ROM_PWMGenEnable(PWM1_BASE, PWM_GEN_3);
 
     // Turn on the Output pins
-    ROM_PWMOutputState(PWM1_BASE, PWM_OUT_4_BIT | PWM_OUT_5_BIT | PWM_OUT_6_BIT | PWM_OUT_7_BIT, true);
+    ROM_PWMOutputState(PWM1_BASE, PWM_OUT_0_BIT | PWM_OUT_2_BIT | PWM_OUT_5_BIT | PWM_OUT_6_BIT, true);
 }
 
 void arm_the_motor()
@@ -100,10 +103,10 @@ void arm_the_motor()
     {
         //TimerIntDisable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
 
- //       ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,1800);
+        ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_0,1800);
+        ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_2,1800);
         ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,1800);
         ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,1800);
-        ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7,1800);
 
         delaySEC(1);
 
@@ -149,10 +152,10 @@ void pwm_interrupt()
     TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
 
     // Sets the adjusted speed to the PWM pins
- //   ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4, PWM_motor0);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5, PWM_motor1);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6, PWM_motor2);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7, PWM_motor3);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_0, PWM_motor0);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_2, PWM_motor1);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5, PWM_motor2);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6, PWM_motor3);
 }
 
 void TimerStart2(int set_freq)
