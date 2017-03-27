@@ -52,13 +52,14 @@ void pwm_gpio_configure()
 {
     // Configure the PF# pins as Pulse Width Modulation
     ROM_GPIOPinConfigure(GPIO_PD0_M1PWM0);
-    ROM_GPIOPinConfigure(GPIO_PD1_M1PWM2);
+    ROM_GPIOPinConfigure(GPIO_PE4_M1PWM2);
     ROM_GPIOPinConfigure(GPIO_PF1_M1PWM5);
     ROM_GPIOPinConfigure(GPIO_PF2_M1PWM6);
 
     // Configures the pins as Pulse Width Modulation
     ROM_GPIOPinTypePWM(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2);
-    ROM_GPIOPinTypePWM(GPIO_PORTD_BASE, GPIO_PIN_0|GPIO_PIN_1);
+    ROM_GPIOPinTypePWM(GPIO_PORTD_BASE, GPIO_PIN_0);
+    ROM_GPIOPinTypePWM(GPIO_PORTE_BASE, GPIO_PIN_4);
 }
 
 void pwm_configuration()
@@ -179,10 +180,10 @@ void pwm_interrupt()
 
 
     // Sets the adjusted speed to the PWM pins
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_0, PWM_motor0);^M
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_2, PWM_motor1);^M
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5, PWM_motor2);^M
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6, PWM_motor3);^M
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_0, PWM_motor0);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_2, PWM_motor1);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5, PWM_motor2);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6, PWM_motor3);
 		
 	#ifdef _DEBUG_MODE
     UARTprintf("PID Control: %d", pid.control);
