@@ -25,10 +25,11 @@
 #include "driverlib/timer.h"
 
 #include "motor_pwm.h"
-#include "t_interrupt.h"
 #include "ultrasonic.h"
 #include "uartterm/t_uart.h"
+
 #include "altitude_pid.h"
+#include "config.h"
 
 	uint32_t freq;
 
@@ -180,12 +181,14 @@ void pwm_interrupt()
     ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6, PWM_motor2);
     ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7, PWM_motor3);
 
-//    UARTprintf("PID Control: %d", pid.control);
-//    UARTprintf("PWM_motor0 %d\n", PWM_motor0);
-//    int test_cm = (int) distance_cm;
-//    UARTprintf("Distance cm: %d\n", test_cm);
-//    int test_error = (int) error;
-//    UARTprintf("Error: %d\n", test_error);
+	#ifdef _DEBUG_MODE
+    UARTprintf("PID Control: %d", pid.control);
+    UARTprintf("PWM_motor0 %d\n", PWM_motor0);
+    int test_cm = (int) distance_cm;
+    UARTprintf("Distance cm: %d\n", test_cm);
+    int test_error = (int) error;
+    UARTprintf("Error: %d\n", test_error);
+	#endif
 }
 
 void TimerStart2(int set_freq)

@@ -27,9 +27,9 @@
 
 #include "ultrasonic.h"
 #include "uartterm/t_uart.h"
-#include "t_interrupt.h"
 #include "inc/hw_timer.h"
 #include "ftoa.h"
+#include "config.h"
 
 #define TRIGGER_PIN 			GPIO_PIN_6
 #define TRIGGER_BASE 			GPIO_PORTD_BASE
@@ -93,8 +93,9 @@ void distance_calculations(uint32_t clock_timer)
     } else {
     		ftoa(distance_cm, distance_string, 3);
     }
-
+	#ifdef _MATLAB_OUT
     UARTprintf("%s\n", distance_string);						// This line will need to be un-commented for MatLab
+	#endif
 }
 
 
