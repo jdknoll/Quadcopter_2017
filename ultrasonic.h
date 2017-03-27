@@ -8,9 +8,12 @@
 #ifndef ULTRASONIC_H_
 #define ULTRASONIC_H_
 
+#include <stdint.h>
+
 void ultrasonicTriggerTimerHandler(void);
 void ultrasonicEchoHandler(void);
 void initialize_ultrasonic();
+void distance_calculations(uint32_t clock_timer);
 
 extern double distance_cm;		//current height of quadcopter
 extern char distance_string[50];
