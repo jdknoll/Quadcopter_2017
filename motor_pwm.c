@@ -54,7 +54,7 @@ void pwm_gpio_configure()
 
     // Configures the pins as Pulse Width Modulation
     ROM_GPIOPinTypePWM(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2);
-    ROM_GPIOPinTypePWM(GPIO_PORTD_BASE, GPIO_PIN_0|GPIO_PIN_);
+    ROM_GPIOPinTypePWM(GPIO_PORTD_BASE, GPIO_PIN_0|GPIO_PIN_1);
 }
 
 void pwm_configuration()
