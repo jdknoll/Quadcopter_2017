@@ -27,9 +27,9 @@
 
 #include "ultrasonic.h"
 #include "uartterm/t_uart.h"
-#include "t_interrupt.h"
 #include "inc/hw_timer.h"
 #include "ftoa.h"
+#include "config.h"
 
 #define TRIGGER_PIN 			GPIO_PIN_6
 #define TRIGGER_BASE 			GPIO_PORTD_BASE
@@ -86,7 +86,16 @@ void distance_calculations(uint32_t clock_timer)
 
     //formula given by the ultrasonic data sheet for range
     //range_cm = (clock_timer * 340) / 2;
-    ftoa(distance_cm, distance_string, 3);
+    if (distance_cm < 0){
+    		distance_string[0] = '-';
+    		distance_string[1] = '1';
+    		distance_string[2] = '\0';
+    } else {
+    		ftoa(distance_cm, distance_string, 3);
+    }
+	#ifdef _MATLAB_OUT
+    UARTprintf("%s\n", distance_string);						// This line will need to be un-commented for MatLab
+	#endif
 }
 
 
@@ -100,22 +109,14 @@ void ultrasonicEchoHandler(void)
     bool value = GPIOPinRead(ECHO_BASE, ECHO_PIN);
 
     if(value){               				// this trigger occurs when echo is high going low - measure here
-    	//ROM_SysTickEnable();                //starts a 24 bit timer
-    	ROM_TimerDisable(ECHO_TIMER_BASE, ECHO_TIMER);
-    	HWREG(ECHO_TIMER_BASE + TIMER_O_TAV) = 0;			// GPTM Timer A Value set to 0
-    	ROM_TimerLoadSet(ECHO_TIMER_BASE, ECHO_TIMER,  0xFFFFFFFF);
-    	ROM_TimerEnable(ECHO_TIMER_BASE, ECHO_TIMER);
+    		ROM_TimerDisable(ECHO_TIMER_BASE, ECHO_TIMER);
+    		HWREG(ECHO_TIMER_BASE + TIMER_O_TAV) = 0;			// GPTM Timer A Value set to 0
+    		ROM_TimerLoadSet(ECHO_TIMER_BASE, ECHO_TIMER,  0xFFFFFFFF);
+    		ROM_TimerEnable(ECHO_TIMER_BASE, ECHO_TIMER);
     } else {								// this trigger occurs when the echo is low going high
-    	//ROM_IntDisable(INT_WTIMER1A);
-    	//ROM_TimerIntDisable(ECHO_TIMER_BASE, TIMER_TIMA_TIMEOUT);
-    	ROM_TimerDisable(ECHO_TIMER_BASE, ECHO_TIMER);
-
-    	clock_timer = ROM_TimerValueGet(ECHO_TIMER_BASE, ECHO_TIMER);
-
-    	//clock_timer = ROM_SysTickValueGet();
+    		ROM_TimerDisable(ECHO_TIMER_BASE, ECHO_TIMER);
+    		clock_timer = ROM_TimerValueGet(ECHO_TIMER_BASE, ECHO_TIMER);
         distance_calculations(clock_timer);
-
-        UARTprintf("%d\n", distance_string);
     }
 }
 
