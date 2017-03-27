@@ -2,7 +2,7 @@
  * main.c
  *
  *  Created on: Mar 15, 2017
- *      Author: Scott Keller
+ *      Author: Scott Keller, Josiah Knoll, Trey Perry, and Kyle Shoop
  */
 
 /*################################################
