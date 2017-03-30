@@ -13,6 +13,7 @@
 #include "../I2C.h"
 
 #include "terminal.h"
+#include "t_uart.h"
 #include "../motor_pwm.h"
 #include "../ultrasonic.h"
 

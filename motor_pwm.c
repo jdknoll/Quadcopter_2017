@@ -16,9 +16,8 @@
 #include <stdbool.h>
 
 #include "inc/tm4c123gh6pm.h"
+
 #include "driverlib/pin_map.h"
-#include "inc/hw_gpio.h"
-#include "inc/hw_types.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/interrupt.h"
 #include "driverlib/gpio.h"
@@ -27,7 +26,6 @@
 #include "motor_pwm.h"
 #include "ultrasonic.h"
 #include "uartterm/t_uart.h"
-
 #include "altitude_pid.h"
 #include "config.h"
 
