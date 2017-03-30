@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "driverlib/interrupt.h"
+
 #include "driverlib/rom.h"
 #include "driverlib/sysctl.h"
 

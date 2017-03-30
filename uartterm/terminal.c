@@ -47,19 +47,15 @@ int parser(char* input0) {
     } else if(strcmp(token, "testterm") == 0) {
     		testterm();
     } else if(strcmp(token, "matlab_pwm") == 0) {
-    	matlab_pwm(strtok(NULL, " "), strtok(NULL, " "), strtok(NULL, " "), strtok(NULL, " "));
+    		matlab_pwm(strtok(NULL, " "), strtok(NULL, " "), strtok(NULL, " "), strtok(NULL, " "));
     } else if(strcmp(token, "matlab_req") == 0) {
-    	matlab_req();
+    		matlab_req();
     } else if(strcmp(token, "m") == 0){
-    	pwm_all(strtok(NULL, " "));
-    } else if(strcmp(token, "fuck") == 0){						// command to make the fan setup float in the 1D setup
-    	if (strcmp(strtok(NULL, " "), "it") == 0){
-    		float_it();
-    	}
+    		pwm_all(strtok(NULL, " "));
     } else {
-    	UARTprintf("incorrect input");
-    	free(input);
-    	return -1;
+    		UARTprintf("incorrect input");
+    		free(input);
+    		return -1;
     }
     free(input);
     return 0;

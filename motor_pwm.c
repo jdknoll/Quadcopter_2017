@@ -18,10 +18,13 @@
 #include "inc/tm4c123gh6pm.h"
 
 #include "driverlib/pin_map.h"
+#include "inc/hw_gpio.h"
+#include "inc/hw_types.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/interrupt.h"
 #include "driverlib/gpio.h"
 #include "driverlib/timer.h"
+#include "driverlib/rom.h"
 
 #include "motor_pwm.h"
 #include "ultrasonic.h"

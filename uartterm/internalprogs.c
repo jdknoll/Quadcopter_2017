@@ -86,10 +86,3 @@ void matlab_req(){
 	UARTprintf("\n%s", distance_string);
 }
 
-void float_it(){
-    //ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_4,pwm_int);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5, 2070);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6, 2070);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_7, 2070);
-}
-

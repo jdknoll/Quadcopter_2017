@@ -57,24 +57,26 @@ void ultrasonicTriggerTimerHandler(void)
 
     // Send the 10 us trigger signal
     if(trigger_status){
-        //if the trigger is high, set a timer for the low time and switch the signal
+        // if the trigger is high, set a timer for the low time and switch the signal
         ROM_TimerLoadSet(TIMER2_BASE, TIMER_A, 800);
         ROM_GPIOPinWrite(GPIO_PORTD_BASE, TRIGGER_PIN, TRIGGER_PIN);
         trigger_status = ~trigger_status;
     } else {
-        //if the trigger is low, set a timer for the high time and switch the signal
+        // if the trigger is low, set a timer for the high time and switch the signal
         ROM_TimerLoadSet(TIMER2_BASE, TIMER_A, 1892800); // calculated to guarantee that trigger shouldn't run while echo is high
         ROM_GPIOPinWrite(GPIO_PORTD_BASE, TRIGGER_PIN, 1);
         trigger_status = ~trigger_status;
+
+        // Do the pwm calculations on the negedge of trigger.
+        distance_calculations(clock_timer);
+
     }
 }
 
 
 void distance_calculations(uint32_t clock_timer)
 {
-//    distance_cm = 5;
     //formula given by the ultrasonic data sheet for centimeters
-    //distance_cm = ((double)clock_timer/80)/58;
     distance_cm = ((double)clock_timer/80)/58;
 
     //formula given by the ultrasonic data sheet for range
@@ -96,9 +98,7 @@ void distance_calculations(uint32_t clock_timer)
 //pull clock reading information from a TI QA: https://e2e.ti.com/support/microcontrollers/tiva_arm/f/908/t/256323
 void ultrasonicEchoHandler(void)
 {
-	int clock_timer;
-
-    GPIOIntClear(ECHO_BASE, ECHO_PIN);  // Clear interrupt flag
+	GPIOIntClear(ECHO_BASE, ECHO_PIN);  // Clear interrupt flag
     bool value = GPIOPinRead(ECHO_BASE, ECHO_PIN);
 
     if(value){               				// this trigger occurs when echo is high going low - measure here
@@ -109,7 +109,6 @@ void ultrasonicEchoHandler(void)
     } else {								// this trigger occurs when the echo is low going high
     		ROM_TimerDisable(ECHO_TIMER_BASE, ECHO_TIMER);
     		clock_timer = ROM_TimerValueGet(ECHO_TIMER_BASE, ECHO_TIMER);
-        distance_calculations(clock_timer);
     }
 }
 
