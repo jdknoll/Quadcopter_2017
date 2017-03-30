@@ -18,22 +18,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "inc/hw_gpio.h"
-//#include "inc/tm4c123gh6pm.h"
-#include "inc/hw_i2c.h"
-#include "inc/hw_memmap.h"
-#include "inc/hw_types.h"
-#include "inc/hw_ints.h"
-
-#include "utils/uartstdio.h"
-
-#include "driverlib/pin_map.h"
-#include "driverlib/sysctl.h"
 #include "driverlib/interrupt.h"
-#include "driverlib/gpio.h"
-#include "driverlib/timer.h"
-#include "driverlib/pwm.h"
 #include "driverlib/rom.h"
+#include "driverlib/sysctl.h"
 
 #include "I2C.h"
 #include "accelerometer.h"

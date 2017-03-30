@@ -7,10 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
-#include <stdint.h>
-#include <stdbool.h>
 
-#include "../I2C.h"
 #include "t_uart.h"
 #include "internalprogs.h"
 

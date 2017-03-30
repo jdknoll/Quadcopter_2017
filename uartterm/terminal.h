@@ -8,12 +8,6 @@
 
 #ifndef UARTTERM_TERMINAL_H_
 #define UARTTERM_TERMINAL_H_
-#include <stdbool.h>
-#include <stdint.h>
-
-
-
-#include "utils/uartstdio.h"
 
 #define MAXLINE 1024
 int terminal();

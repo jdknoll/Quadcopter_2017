@@ -9,9 +9,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "driverlib/pin_map.h"
-#include "inc/hw_gpio.h"
-#include "inc/hw_i2c.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
 #include "inc/hw_ints.h"
@@ -19,10 +16,6 @@
 #include "driverlib/interrupt.h"
 #include "driverlib/gpio.h"
 #include "driverlib/timer.h"
-#include "driverlib/pwm.h"
-#include "driverlib/i2c.h"
-#include "driverlib/uart.h"
-#include "driverlib/systick.h"
 #include "driverlib/rom.h"
 
 #include "ultrasonic.h"

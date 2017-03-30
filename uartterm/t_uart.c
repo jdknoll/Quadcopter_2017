@@ -7,19 +7,13 @@
 
 #include "../uartterm/t_uart.h"
 
-#include <stdint.h>
 #include <stdio.h>
-#include <stdbool.h>
 #include <string.h>
 
-#include "inc/hw_i2c.h"
 #include "inc/hw_memmap.h"
-#include "inc/hw_types.h"
 #include "inc/hw_ints.h"
 #include "driverlib/interrupt.h"
 #include "driverlib/gpio.h"
-#include "driverlib/i2c.h"
-#include "driverlib/uart.h"
 #include "driverlib/pin_map.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/rom.h"
@@ -41,12 +35,11 @@ void UARTIntHandler(void)
 
     while(ROM_UARTCharsAvail(UART0_BASE)) //loop while there are chars
     {
-    	ch = ROM_UARTCharGetNonBlocking(UART0_BASE);
-    	if(echo){
-    		ROM_UARTCharPutNonBlocking(UART0_BASE, ch); //echo character
-    	}
+    		ch = ROM_UARTCharGetNonBlocking(UART0_BASE);
+    		if(echo){
+    			ROM_UARTCharPutNonBlocking(UART0_BASE, ch); //echo character
+    		}
     }
-
     //clear the asserted interrupt
     ROM_UARTIntClear(UART0_BASE, ui32Status);
 }
