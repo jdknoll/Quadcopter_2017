@@ -51,6 +51,10 @@ void delaySEC(int sec)
 
 void pwm_gpio_configure()
 {
+    //Enabling the peripherals used by the program (F,C,D)
+    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM1); // The Tiva C Launchpad has two modules (0 and 1). Module 1 covers the LED pins
+
     // Configure the PF# pins as Pulse Width Modulation
     ROM_GPIOPinConfigure(GPIO_PD0_M1PWM0);
     ROM_GPIOPinConfigure(GPIO_PE4_M1PWM2);

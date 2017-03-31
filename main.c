@@ -40,11 +40,11 @@ void wait(int waitTime){
 
 int main(void)
  {
+	// Set the clock to 80MHz
+	ROM_SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_INT | SYSCTL_XTAL_16MHZ);
+
 	// Enable all interrupts
 	ROM_IntMasterEnable();
-
-    // Initialize clock settings
-    clock_config();
 
     // initialize pwm configuration
     pwm_configuration();
