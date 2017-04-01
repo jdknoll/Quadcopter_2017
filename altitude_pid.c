@@ -22,7 +22,7 @@ void pid_initialize()
     pid.p_gain = .03;			// p is more aggresive - scalar value
     pid.i_gain = .03;			// keep i less than p - integral value
     pid.set_point = 15;
-    pid.freq = 2000000; //20000000
+    pid.freq = 2000000; 		//20000000
     pid.PWM_motor0 = 1950;
     pid.PWM_motor1 = 1950;
     pid.PWM_motor2 = 1950;

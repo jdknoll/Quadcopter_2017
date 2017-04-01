@@ -127,8 +127,6 @@ void arm_the_motor()
 void TimerStart(/*int set_freq*/)
 {
   ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER1);
-//  ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER3);
-
   /*
     Configure the timer as periodic, by omission it's in count down mode.
     It counts from the load value to 0 and then resets back to the load value.
@@ -151,7 +149,7 @@ void TimerStart(/*int set_freq*/)
   ROM_IntEnable(INT_TIMER1A);
   ROM_TimerIntEnable(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
   ROM_TimerEnable(TIMER1_BASE, TIMER_A);
-  ROM_IntPrioritySet(INT_TIMER1A, INT_PRIORITY_LEVEL_0);    //set the timer priority to the top priority
+  ROM_IntPrioritySet(INT_TIMER1A, INT_PRIORITY_LEVEL_2);    //set the timer priority to the top priority
 }
 
 
