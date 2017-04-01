@@ -24,9 +24,14 @@
 #include "ftoa.h"
 #include "config.h"
 
+#define TRIGGER_TIMER_FREQ 20000000
+
 #define TRIGGER_PIN 			GPIO_PIN_6
 #define TRIGGER_BASE 			GPIO_PORTD_BASE
 #define TRIGGER_PERIPHERAL		SYSCTL_PERIPH_GPIOD
+
+#define TRIGGER_TIMER_BASE		TIMER2_BASE
+#define TRIGGER_TIMER			TIMER_A
 
 #define ECHO_PIN 				GPIO_INT_PIN_7
 #define ECHO_BASE 				GPIO_PORTC_BASE
@@ -37,13 +42,11 @@
 #define ECHO_TIMER				TIMER_A
 
 
-#define TIMERA_FREQ 20000000
 #define HIGH 1
 #define LOW 0
 
-int interrupt_status = 0;
-int trigger_status = 0; //if high on trigger, 1 otherwise, 0
-
+#define TRIGGER_HIGH_TIME 800
+#define TRIGGER_LOW_TIME 1999200
 
 int range_cm;
 double distance_cm;
@@ -52,18 +55,21 @@ char distance_string[50];
 
 void ultrasonicTriggerTimerHandler(void)
 {
-    // Clear the timer interrupt
-    ROM_TimerIntClear(TIMER2_BASE, TIMER_A);
+	// Declare the trigger_status static integer
+	static int trigger_status = 0;
 
-    // Send the 10 us trigger signal
+    // Clear the timer interrupt
+    ROM_TimerIntClear(TRIGGER_TIMER_BASE, TRIGGER_TIMER);
+
+
     if(trigger_status){
-        // if the trigger is high, set a timer for the low time and switch the signal
-        ROM_TimerLoadSet(TIMER2_BASE, TIMER_A, 800);
+    	// If the trigger is high, flip it low and set the low time
+        ROM_TimerLoadSet(TRIGGER_TIMER_BASE, TRIGGER_TIMER, TRIGGER_HIGH_TIME);
         ROM_GPIOPinWrite(GPIO_PORTD_BASE, TRIGGER_PIN, TRIGGER_PIN);
         trigger_status = ~trigger_status;
     } else {
-        // if the trigger is low, set a timer for the high time and switch the signal
-        ROM_TimerLoadSet(TIMER2_BASE, TIMER_A, 1999200); // calculated to guarantee that trigger shouldn't run while echo is high: 1892800
+        // If the trigger is low, flip it high and set the high time
+        ROM_TimerLoadSet(TRIGGER_TIMER_BASE, TRIGGER_TIMER, TRIGGER_LOW_TIME); // calculated to guarantee that trigger shouldn't run while echo is high: 1892800
         ROM_GPIOPinWrite(GPIO_PORTD_BASE, TRIGGER_PIN, 1);
         trigger_status = ~trigger_status;
     }
@@ -122,14 +128,14 @@ void initialize_ultrasonic()
 
     // Set up the trigger timer interrupt
     ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER2);		// enable the timer2 peripheral for the trigger
-    ROM_TimerConfigure(TIMER2_BASE, TIMER_CFG_PERIODIC); 	// configure timer2 peripheral for the trigger
-    ROM_TimerLoadSet(TIMER2_BASE, TIMER_A, TIMERA_FREQ);   	// set timer2A with the desired period
+    ROM_TimerConfigure(TRIGGER_TIMER_BASE, TIMER_CFG_PERIODIC); 	// configure timer2 peripheral for the trigger
+    ROM_TimerLoadSet(TRIGGER_TIMER_BASE, TRIGGER_TIMER, TRIGGER_TIMER_FREQ);   	// set timer2A with the desired period
 
     // enable the interrupt
     ROM_IntEnable(INT_TIMER2A);
-    ROM_TimerIntEnable(TIMER2_BASE, TIMER_TIMA_TIMEOUT);
+    ROM_TimerIntEnable(TRIGGER_TIMER_BASE, TIMER_TIMA_TIMEOUT);
     ROM_IntPrioritySet(INT_TIMER2A, INT_PRIORITY_LEVEL_1);	// set the priority lower than the pwm
-    ROM_TimerEnable(TIMER2_BASE, TIMER_A);					// enable timer2A
+    ROM_TimerEnable(TRIGGER_TIMER_BASE, TRIGGER_TIMER);					// enable timer2A
 
 
     // initialize the echo timer
