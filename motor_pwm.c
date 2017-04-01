@@ -72,8 +72,8 @@ void pwm_configuration()
 
     //Enabling the peripherals used by the program (F,C,D)
     ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
-//    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC); //Enabled in Ultrasonic.c
-//    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD); //Enabled in Ultrasonic.c
+    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC); //Enabled in Ultrasonic.c
+    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD); //Enabled in Ultrasonic.c
     ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
     ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM0); // The Tiva C Launchpad has two modules (0 and 1). Module 1 covers the LED pins
     ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM1);
