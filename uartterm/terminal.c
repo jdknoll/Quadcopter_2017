@@ -45,13 +45,19 @@ int parser(char* input0) {
     } else if(strcmp(token, "printwidereg") == 0) {
         printwidereg(strtok(NULL, " "));
     } else if(strcmp(token, "testterm") == 0) {
-    		testterm();
+    	testterm();
     } else if(strcmp(token, "matlab_pwm") == 0) {
-    		matlab_pwm(strtok(NULL, " "), strtok(NULL, " "), strtok(NULL, " "), strtok(NULL, " "));
+    	matlab_pwm(strtok(NULL, " "), strtok(NULL, " "), strtok(NULL, " "), strtok(NULL, " "));
     } else if(strcmp(token, "matlab_req") == 0) {
-    		matlab_req();
+    	matlab_req();
+    } else if(strcmp(token, "s") == 0) {
+    	set_point(strtok(NULL, " "));
+    } else if(strcmp(token, "i") == 0) {
+    	set_i(strtok(NULL, " "));
+    } else if(strcmp(token, "p") == 0) {
+    	set_p(strtok(NULL, " "));
     } else if(strcmp(token, "m") == 0){
-    		pwm_all(strtok(NULL, " "));
+    	pwm_all(strtok(NULL, " "));
     } else {
     		UARTprintf("incorrect input");
     		free(input);

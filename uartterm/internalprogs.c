@@ -16,6 +16,7 @@
 #include "t_uart.h"
 #include "../motor_pwm.h"
 #include "../ultrasonic.h"
+#include "../altitude_pid.h"
 
 
 #define GYRO_XOUT_H 0x43
@@ -86,3 +87,14 @@ void matlab_req(){
 	UARTprintf("\n%s", distance_string);
 }
 
+void set_point(char *set_point){
+	pid.set_point = atoi(set_point);
+}
+
+void set_i(char *set_i){
+	pid.i_gain = (double)atoi(set_i)/100;
+}
+
+void set_p(char *set_p){
+	pid.p_gain = (double)atoi(set_p)/100;
+}

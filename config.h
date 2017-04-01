@@ -8,8 +8,8 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-#define _MATLAB_OUT
-#define _DEBUG_MODE
+//#define _MATLAB_OUT
+//#define _DEBUG_MODE
 
 
 //lower priority levels are higher priority - top 3 bits determine priority
