@@ -62,7 +62,7 @@ int main(void)
     initI2C1();
 
     // Initialize the Accelerometer
-    InitializeAccel();
+    //InitializeAccel();
 
     // Print out the WHO_AM_I register
     //PrintAccelWhoAmI();
@@ -72,13 +72,14 @@ int main(void)
 
     // Initialize the GPIO for the sonic distance
     initialize_ultrasonic();
+    wait(100000);
 
     // Initialize the PID loop
     pid_initialize();
 
     // initialize pwm timer
     //TimerStart(100);
-    //TimerStart2(100);
+    TimerStart();
 
     // Testing Loop
     while(1)

@@ -44,7 +44,7 @@
 int interrupt_status = 0;
 int trigger_status = 0; //if high on trigger, 1 otherwise, 0
 
-volatile uint32_t clock_timer;
+
 int range_cm;
 double distance_cm;
 
@@ -63,13 +63,9 @@ void ultrasonicTriggerTimerHandler(void)
         trigger_status = ~trigger_status;
     } else {
         // if the trigger is low, set a timer for the high time and switch the signal
-        ROM_TimerLoadSet(TIMER2_BASE, TIMER_A, 1892800); // calculated to guarantee that trigger shouldn't run while echo is high
+        ROM_TimerLoadSet(TIMER2_BASE, TIMER_A, 1999200); // calculated to guarantee that trigger shouldn't run while echo is high: 1892800
         ROM_GPIOPinWrite(GPIO_PORTD_BASE, TRIGGER_PIN, 1);
         trigger_status = ~trigger_status;
-
-        // Do the pwm calculations on the negedge of trigger.
-        distance_calculations(clock_timer);
-
     }
 }
 
@@ -98,6 +94,7 @@ void distance_calculations(uint32_t clock_timer)
 //pull clock reading information from a TI QA: https://e2e.ti.com/support/microcontrollers/tiva_arm/f/908/t/256323
 void ultrasonicEchoHandler(void)
 {
+	volatile uint32_t clock_timer;
 	GPIOIntClear(ECHO_BASE, ECHO_PIN);  // Clear interrupt flag
     bool value = GPIOPinRead(ECHO_BASE, ECHO_PIN);
 
@@ -106,9 +103,11 @@ void ultrasonicEchoHandler(void)
     		HWREG(ECHO_TIMER_BASE + TIMER_O_TAV) = 0;			// GPTM Timer A Value set to 0
     		ROM_TimerLoadSet(ECHO_TIMER_BASE, ECHO_TIMER,  0xFFFFFFFF);
     		ROM_TimerEnable(ECHO_TIMER_BASE, ECHO_TIMER);
-    } else {								// this trigger occurs when the echo is low going high
+    } else {								// this occurs on the negedge of echo
     		ROM_TimerDisable(ECHO_TIMER_BASE, ECHO_TIMER);
     		clock_timer = ROM_TimerValueGet(ECHO_TIMER_BASE, ECHO_TIMER);
+            // Do the pwm calculations on the negedge of echo
+            distance_calculations(clock_timer);
     }
 }
 

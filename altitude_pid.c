@@ -11,32 +11,6 @@
 
 t_PID pid;
 
-//// Initialize function takes a variable to set frequency
-//void pid_interrupt()
-//{
-//    // enable the timer1 peripheral
-//    SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER1);
-//    // configure timer1 peripheral
-//    TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC);
-//
-//    // set timer1A with the desired period
-//    TimerLoadSet(TIMER1_BASE, TIMER_A, alt_pid_freq);
-//
-//    // enable the interrupt
-//    IntEnable(INT_TIMER1A);
-//    TimerIntEnable(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
-//    IntMasterEnable();
-//
-//    // enable timer1A
-//    TimerEnable(TIMER2_BASE, TIMER_A);
-//
-//    IntMasterEnable();
-//
-//    // initialize the integral and current error for the PID loop
-//    pid_initialize(pid);
-//}
-
-
 
 void pid_initialize()
 {
@@ -44,13 +18,27 @@ void pid_initialize()
     pid.prev_error = 0;
     pid.int_error = 0;
 
-    pid.windup_guard_low = -200;
-    pid.windup_guard_high = 200;
-    pid.p_gain = .03;
-    pid.i_gain = .03;
+    pid.windup_guard = 200;
+    pid.p_gain = .03;			// p is more aggresive - scalar value
+    pid.i_gain = .03;			// keep i less than p - integral value
     pid.set_point = 15;
+    pid.freq = 2000000; //20000000
+    pid.PWM_motor0 = 1950;
+    pid.PWM_motor1 = 1950;
+    pid.PWM_motor2 = 1950;
+    pid.PWM_motor3 = 1950;
 }
 
+double pwm_saturate_add(double a, double b){
+	double output = a + b;
+	if(output > 2250){
+		return 2250;
+	} else  if (output < 1950){
+		return 1950;
+	} else {
+		return output;
+	}
+}
 
 void pid_update(double curr_error, double dt)
 {
@@ -62,10 +50,10 @@ void pid_update(double curr_error, double dt)
     // integration with windup guarding
     pid.int_error += (curr_error * dt);
 
-    if (pid.int_error < -(pid.windup_guard_low))
-        pid.int_error = -(pid.windup_guard_low);
-    else if (pid.int_error > pid.windup_guard_high)		// integral windup control
-        pid.int_error = pid.windup_guard_high;
+    if (pid.int_error < -(pid.windup_guard))
+        pid.int_error = -(pid.windup_guard);
+    else if (pid.int_error > pid.windup_guard)		// integral windup control
+        pid.int_error = pid.windup_guard;
 
 
     // differentiation
@@ -81,4 +69,10 @@ void pid_update(double curr_error, double dt)
 
     // save current error as previous error for next iteration
     pid.prev_error = curr_error;
+
+    // calculate the double value for PWM_motors
+	pid.PWM_motor0 = pwm_saturate_add(pid.PWM_motor0, pid.control);
+	pid.PWM_motor1 = pwm_saturate_add(pid.PWM_motor1, pid.control);
+	pid.PWM_motor2 = pwm_saturate_add(pid.PWM_motor2, pid.control);
+	pid.PWM_motor3 = pwm_saturate_add(pid.PWM_motor3, pid.control);
 }

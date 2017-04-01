@@ -14,8 +14,7 @@ void pid_initialize();
 void pid_update(double curr_error, double dt);
 
 typedef struct {
-    double windup_guard_low;
-    double windup_guard_high;
+    double windup_guard;
     double p_gain;
     double i_gain;
     //double d_gain;
@@ -23,6 +22,11 @@ typedef struct {
     double int_error;
     double set_point;
     double control;
+    double PWM_motor0;
+    double PWM_motor1;
+    double PWM_motor2;
+    double PWM_motor3;
+    int freq;
 } t_PID;
 
 
