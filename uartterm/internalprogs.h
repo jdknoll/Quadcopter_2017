@@ -16,5 +16,6 @@ void pwm_all(char *pwm);
 void set_point(char *set_point);
 void set_i(char *set_i);
 void set_p(char *set_p);
+void arm();
 
 #endif

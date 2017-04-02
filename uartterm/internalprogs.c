@@ -98,3 +98,11 @@ void set_i(char *set_i){
 void set_p(char *set_p){
 	pid.p_gain = (double)atoi(set_p)/100;
 }
+
+void arm() {
+	arm_the_motor();
+	pid.PWM_motor0 = 1950;
+	pid.PWM_motor1 = 1950;
+	pid.PWM_motor2 = 1950;
+	pid.PWM_motor3 = 1950;
+}

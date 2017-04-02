@@ -105,6 +105,7 @@ void pwm_configuration()
 
 void arm_the_motor()
 {
+	ROM_IntMasterDisable();
     int flag = 1;
 
     if(flag == 1)
@@ -122,6 +123,7 @@ void arm_the_motor()
 
         flag = 0;
     }
+    ROM_IntMasterEnable();
 }
 
 void TimerStart(/*int set_freq*/)

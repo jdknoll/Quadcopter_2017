@@ -12,6 +12,7 @@
 #include "internalprogs.h"
 
 #include "terminal.h"
+#include "../motor_pwm.h"
 
 int parser(char* input0);
 
@@ -56,6 +57,8 @@ int parser(char* input0) {
     	set_i(strtok(NULL, " "));
     } else if(strcmp(token, "p") == 0) {
     	set_p(strtok(NULL, " "));
+    } else if(strcmp(token, "arm") == 0){
+    	arm();
     } else if(strcmp(token, "m") == 0){
     	pwm_all(strtok(NULL, " "));
     } else {
