@@ -21,7 +21,6 @@
 #include "ultrasonic.h"
 #include "uartterm/t_uart.h"
 #include "inc/hw_timer.h"
-#include "ftoa.h"
 #include "config.h"
 
 #define TRIGGER_TIMER_FREQ 20000000
@@ -64,12 +63,18 @@ void ultrasonicTriggerTimerHandler(void)
 
     if(trigger_status){
     	// If the trigger is high, flip it low and set the low time
+    	ROM_TimerDisable(TRIGGER_TIMER_BASE, TRIGGER_TIMER);
         ROM_TimerLoadSet(TRIGGER_TIMER_BASE, TRIGGER_TIMER, TRIGGER_HIGH_TIME);
+        ROM_TimerEnable(TRIGGER_TIMER_BASE, TRIGGER_TIMER);
+
         ROM_GPIOPinWrite(GPIO_PORTD_BASE, TRIGGER_PIN, TRIGGER_PIN);
         trigger_status = ~trigger_status;
     } else {
         // If the trigger is low, flip it high and set the high time
+    	ROM_TimerDisable(TRIGGER_TIMER_BASE, TRIGGER_TIMER);
         ROM_TimerLoadSet(TRIGGER_TIMER_BASE, TRIGGER_TIMER, TRIGGER_LOW_TIME); // calculated to guarantee that trigger shouldn't run while echo is high: 1892800
+        ROM_TimerEnable(TRIGGER_TIMER_BASE, TRIGGER_TIMER);
+
         ROM_GPIOPinWrite(GPIO_PORTD_BASE, TRIGGER_PIN, 1);
         trigger_status = ~trigger_status;
     }
@@ -81,17 +86,8 @@ void distance_calculations(uint32_t clock_timer)
     //formula given by the ultrasonic data sheet for centimeters
     distance_cm = ((double)clock_timer/80)/58;
 
-    //formula given by the ultrasonic data sheet for range
-    //range_cm = (clock_timer * 340) / 2;
-    if (distance_cm < 0){
-    		distance_string[0] = '-';
-    		distance_string[1] = '1';
-    		distance_string[2] = '\0';
-    } else {
-    		ftoa(distance_cm, distance_string, 3);
-    }
 	#ifdef _MATLAB_OUT
-    UARTprintf("%s\n", distance_string);						// This line will need to be un-commented for MatLab
+    UARTprintf("%s\n", (int)distance_cm);						// This line will need to be un-commented for MatLab
 	#endif
 }
 
