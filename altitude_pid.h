@@ -17,7 +17,7 @@ typedef struct {
     double windup_guard;
     double p_gain;
     double i_gain;
-    //double d_gain;
+    double d_gain;
     double prev_error;
     double int_error;
     double set_point;

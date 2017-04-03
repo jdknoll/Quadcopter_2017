@@ -87,18 +87,39 @@ void matlab_req(){
 	UARTprintf("\n%s", distance_string);
 }
 
+void print_setup(){
+	UARTprintf("\n");
+	UARTprintf("set_point (mm):      %d\n", (int)pid.set_point);
+	UARTprintf("proportional*1000:   %d\n", (int)(pid.p_gain*1000));
+	UARTprintf("integral*1000:       %d\n", (int)(pid.i_gain*1000));
+	UARTprintf("derivative*10000000:   %d\n", (int)(pid.d_gain*10000000));
+	UARTprintf("windup guard:        %d\n", (int)pid.windup_guard);
+}
+
+// set the height point
 void set_point(char *set_point){
-	pid.set_point = atoi(set_point);
+	pid.set_point = atoi(set_point)*10;
+	print_setup();
 }
 
-void set_i(char *set_i){
-	pid.i_gain = (double)atoi(set_i)/100;
-}
-
+// set the proportional
 void set_p(char *set_p){
-	pid.p_gain = (double)atoi(set_p)/100;
+	pid.p_gain = (double)atoi(set_p)/1000;
+	print_setup();
 }
 
+// set the integer value
+void set_i(char *set_i){
+	pid.i_gain = (double)atoi(set_i)/1000;
+	print_setup();
+}
+
+void set_d(char *set_d){
+	pid.d_gain = (double)atoi(set_d)/10000000;
+	print_setup();
+}
+
+// go through the arming sequence again
 void arm() {
 	arm_the_motor();
 	pid.PWM_motor0 = 1950;
@@ -106,3 +127,10 @@ void arm() {
 	pid.PWM_motor2 = 1950;
 	pid.PWM_motor3 = 1950;
 }
+
+// set the wind-up guard
+void set_w(char *set_w){
+	pid.windup_guard = (double)atoi(set_w);
+	print_setup();
+}
+

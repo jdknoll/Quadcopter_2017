@@ -163,7 +163,7 @@ void pwm_interrupt()
     TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
 	int error;
 
-	error = pid.set_point - distance_cm;
+	error = pid.set_point - distance_mm;
 
 	//call the PID loop to give updates on altitude
 	double timescale = 1/(double)pid.freq;

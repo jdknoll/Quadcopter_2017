@@ -45,10 +45,10 @@
 #define LOW 0
 
 #define TRIGGER_HIGH_TIME 800
-#define TRIGGER_LOW_TIME 1999200
+#define TRIGGER_LOW_TIME 1892800 //Guarantees that the times shouldn't overlap old value: 1999200
 
 int range_cm;
-double distance_cm;
+double distance_mm;
 
 char distance_string[50];
 
@@ -84,10 +84,10 @@ void ultrasonicTriggerTimerHandler(void)
 void distance_calculations(uint32_t clock_timer)
 {
     //formula given by the ultrasonic data sheet for centimeters
-    distance_cm = ((double)clock_timer/80)/58;
+    distance_mm = ((double)clock_timer/8)/58;
 
 	#ifdef _MATLAB_OUT
-    UARTprintf("%s\n", (int)distance_cm);						// This line will need to be un-commented for MatLab
+    UARTprintf("%s\n", (int)distance_mm);						// This line will need to be un-commented for MatLab
 	#endif
 }
 

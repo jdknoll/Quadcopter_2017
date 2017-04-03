@@ -6,6 +6,7 @@
 
 #include "altitude_pid.h"
 #include "ultrasonic.h"
+#include "uartterm/t_uart.h"
 
 #define alt_pid_freq 20000000
 
@@ -18,11 +19,12 @@ void pid_initialize()
     pid.prev_error = 0;
     pid.int_error = 0;
 
-    pid.windup_guard = 300;
-    pid.p_gain = .08;			// p is more aggresive - scalar value
-    pid.i_gain = .04;			// keep i less than p - integral value
-    pid.set_point = 13;
-    pid.freq = 2005000; 		//20000000
+    pid.windup_guard = 200;
+    pid.p_gain = .023;			// p is more aggresive - scalar value
+    pid.i_gain = .004;			// keep i less than p - integral value
+    pid.d_gain = .0000002;
+    pid.set_point = 100;
+    pid.freq = 1894000; 		//20000000
     pid.PWM_motor0 = 1950;
     pid.PWM_motor1 = 1950;
     pid.PWM_motor2 = 1950;
@@ -42,37 +44,41 @@ double pwm_saturate_add(double a, double b){
 
 void pid_update(double curr_error, double dt)
 {
-    //double diff;
+    double diff;
     double p_term;
     double i_term;
-    //double d_term;
+    double d_term;
 
     // integration with windup guarding
     pid.int_error += (curr_error * dt);
 
-    if (pid.int_error < -(pid.windup_guard))
-        pid.int_error = -(pid.windup_guard);
-    else if (pid.int_error > pid.windup_guard)		// integral windup control
-        pid.int_error = pid.windup_guard;
-
+    if (pid.int_error < -(pid.windup_guard)) {
+    	pid.int_error = -(pid.windup_guard);
+    	UARTprintf("Windup low\n");
+    } else if (pid.int_error > pid.windup_guard){ // integral windup control
+    	pid.int_error = pid.windup_guard;
+    	UARTprintf("Windup high\n");
+    }
 
     // differentiation
-    //diff = ((curr_error - pid->prev_error) / dt);
+    diff = ((curr_error - pid.prev_error) / dt);
 
     // scaling
     p_term = (pid.p_gain * curr_error);
     i_term = (pid.i_gain * pid.int_error);
-    //d_term = (pid->d_gain * diff);
+    d_term = (pid.d_gain * diff);
 
     // summation of terms
-    pid.control = p_term + i_term; // + d_term;
-
-    // save current error as previous error for next iteration
-    pid.prev_error = curr_error;
+    pid.control = p_term + i_term + d_term;
 
     // calculate the double value for PWM_motors
 	pid.PWM_motor0 = pwm_saturate_add(pid.PWM_motor0, pid.control);
 	pid.PWM_motor1 = pwm_saturate_add(pid.PWM_motor1, pid.control);
 	pid.PWM_motor2 = pwm_saturate_add(pid.PWM_motor2, pid.control);
 	pid.PWM_motor3 = pwm_saturate_add(pid.PWM_motor3, pid.control);
+
+	// save current error as previous error for next iteration
+	pid.prev_error = curr_error;
+
+
 }
