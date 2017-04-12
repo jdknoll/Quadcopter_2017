@@ -29,8 +29,8 @@ void clock_config();
 void pwm_interrupt();
 void arm_the_motor();
 void pwm_configuration();
-void pwm_gpio_configure();
 void TimerStart();
+void update_motors();
 
 extern int desired_height_cm;	// height for the copter
 

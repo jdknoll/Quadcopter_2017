@@ -39,11 +39,14 @@ void delaySEC(int sec)
     ROM_SysCtlDelay( (ROM_SysCtlClockGet()/1)*sec );
 }
 
-void pwm_gpio_configure()
+void pwm_configuration()
 {
+
     //Enabling the peripherals used by the program (F,C,D)
+    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
     ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM1); // The Tiva C Launchpad has two modules (0 and 1). Module 1 covers the LED pins
+    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM0); // The Tiva C Launchpad has two modules (0 and 1). Module 1 covers the LED pins
+    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM1);
 
     // Configure the PF# pins as Pulse Width Modulation
     ROM_GPIOPinConfigure(GPIO_PB6_M0PWM0);
@@ -55,19 +58,6 @@ void pwm_gpio_configure()
     ROM_GPIOPinTypePWM(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2);
     ROM_GPIOPinTypePWM(GPIO_PORTB_BASE, GPIO_PIN_4|GPIO_PIN_6);
 
-}
-
-void pwm_configuration()
-{
-
-    //Enabling the peripherals used by the program (F,C,D)
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC); //Enabled in Ultrasonic.c
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD); //Enabled in Ultrasonic.c
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM0); // The Tiva C Launchpad has two modules (0 and 1). Module 1 covers the LED pins
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM1);
-
     //Setting the Pulse Width Modulation Clock
     ROM_SysCtlPWMClockSet(SYSCTL_PWMDIV_8);
 
@@ -76,31 +66,32 @@ void pwm_configuration()
     // PWM_GEN_1 Covers M1PWM2 and M1PWM3
     // PWM_GEN_2 Covers M1PWM4 and M1PWM5
     // PWM_GEN_3 Covers M1PWM6 and M1PWM7 See page 417 DriverLib doc
-    ROM_PWMGenConfigure(PWM1_BASE, PWM_GEN_0, PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
-    ROM_PWMGenConfigure(PWM1_BASE, PWM_GEN_1, PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
+    ROM_PWMGenConfigure(PWM0_BASE, PWM_GEN_0, PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
+    ROM_PWMGenConfigure(PWM0_BASE, PWM_GEN_1, PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
     ROM_PWMGenConfigure(PWM1_BASE, PWM_GEN_2, PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
     ROM_PWMGenConfigure(PWM1_BASE, PWM_GEN_3, PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
 
     // Set the Period (expressed in clock ticks)
-    ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_0, 5000);
-    ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_1, 5000);
+    ROM_PWMGenPeriodSet(PWM0_BASE, PWM_GEN_0, 5000);
+    ROM_PWMGenPeriodSet(PWM0_BASE, PWM_GEN_1, 5000);
     ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_2, 5000);
     ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_3, 5000);
 
     // Set PWM duty-50%
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_0,1950);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_2,1950);
+    ROM_PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,1950);
+    ROM_PWMPulseWidthSet(PWM0_BASE, PWM_OUT_2,1950);
     ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,1950);
     ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,1950);
 
     // Enable the PWM generator
-    ROM_PWMGenEnable(PWM1_BASE, PWM_GEN_0);
-    ROM_PWMGenEnable(PWM1_BASE, PWM_GEN_1);
+    ROM_PWMGenEnable(PWM0_BASE, PWM_GEN_0);
+    ROM_PWMGenEnable(PWM0_BASE, PWM_GEN_1);
     ROM_PWMGenEnable(PWM1_BASE, PWM_GEN_2);
     ROM_PWMGenEnable(PWM1_BASE, PWM_GEN_3);
 
     // Turn on the Output pins
-    ROM_PWMOutputState(PWM1_BASE, PWM_OUT_0_BIT | PWM_OUT_2_BIT | PWM_OUT_5_BIT | PWM_OUT_6_BIT, true);
+    ROM_PWMOutputState(PWM0_BASE, PWM_OUT_0_BIT | PWM_OUT_2_BIT, true);
+    ROM_PWMOutputState(PWM1_BASE, PWM_OUT_5_BIT | PWM_OUT_6_BIT, true);
 }
 
 void arm_the_motor()
@@ -112,8 +103,8 @@ void arm_the_motor()
     {
         //TimerIntDisable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
 
-        ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_0,1800);
-        ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_2,1800);
+        ROM_PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,1800);
+        ROM_PWMPulseWidthSet(PWM0_BASE, PWM_OUT_2,1800);
         ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,1800);
         ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,1800);
 
@@ -126,7 +117,7 @@ void arm_the_motor()
     ROM_IntMasterEnable();
 }
 
-void TimerStart(/*int set_freq*/)
+void TimerStart()
 {
   ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER1);
   /*
@@ -154,6 +145,14 @@ void TimerStart(/*int set_freq*/)
   ROM_IntPrioritySet(INT_TIMER1A, INT_PRIORITY_LEVEL_2);    //set the timer priority to the top priority
 }
 
+// updates the motors to the values stored in the PWM struct
+void update_motors(){
+    ROM_PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, (int)pid.PWM_motor0);
+    ROM_PWMPulseWidthSet(PWM0_BASE, PWM_OUT_2, (int)pid.PWM_motor1);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5, (int)pid.PWM_motor2);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6, (int)pid.PWM_motor3);
+}
+
 
 
 // interrupt Handler for PWM speed
@@ -170,10 +169,7 @@ void pwm_interrupt()
 	pid_update(error, timescale);
 
     // Sets the adjusted speed to the PWM pins
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_0, (int)pid.PWM_motor0);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_2, (int)pid.PWM_motor1);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5, (int)pid.PWM_motor2);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6, (int)pid.PWM_motor3);
+	update_motors();
 		
 	#ifdef _DEBUG_MODE
     UARTprintf("PID Control: %d\n", pid.control);

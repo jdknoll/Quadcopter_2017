@@ -63,10 +63,13 @@ void matlab_pwm(char *pwm0, char *pwm1, char *pwm2, char *pwm3) {
 		return;
 	}
 
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_0,pwm0_int);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_2,pwm1_int);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,pwm2_int);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,pwm3_int);
+	pid.PWM_motor0 = pwm0_int;
+	pid.PWM_motor1 = pwm1_int;
+	pid.PWM_motor2 = pwm2_int;
+	pid.PWM_motor3 = pwm3_int;
+
+	//sets the motor PWM values to the values stored in the struct
+	update_motors();
 }
 
 //set all PWM's to the argument given to the m command
@@ -76,11 +79,13 @@ void pwm_all(char *pwm){
 	if (pwm_int >= 5000){
 			return;
 	}
+	pid.PWM_motor0 = pwm_int;
+	pid.PWM_motor1 = pwm_int;
+	pid.PWM_motor2 = pwm_int;
+	pid.PWM_motor3 = pwm_int;
 
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_0,pwm_int);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_2,pwm_int);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,pwm_int);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,pwm_int);
+	//sets the motor PWM values to the values stored in the struct
+	update_motors();
 }
 
 void matlab_req(){
