@@ -5,8 +5,8 @@
 #include <stdlib.h>
 
 #include "altitude_pid.h"
-#include "ultrasonic.h"
-#include "uartterm/t_uart.h"
+#include "../ultrasonic.h"
+#include "../uartterm/t_uart.h"
 
 #define alt_pid_freq 20000000
 
@@ -24,7 +24,8 @@ void pid_initialize()
     pid.i_gain = .004;			// keep i less than p - integral value
     pid.d_gain = .0000002;
     pid.set_point = 0;//100;
-    pid.freq = 1894000; 		//20000000
+    pid.altitude_freq = 1894000; 		//20000000
+    pid.leveling_freq = 200000;
     pid.PWM_motor0 = 1950;
     pid.PWM_motor1 = 1950;
     pid.PWM_motor2 = 1950;

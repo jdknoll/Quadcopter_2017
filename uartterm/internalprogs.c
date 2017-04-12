@@ -16,7 +16,7 @@
 #include "t_uart.h"
 #include "../motor_pwm.h"
 #include "../ultrasonic.h"
-#include "../altitude_pid.h"
+#include "../pid/altitude_pid.h"
 
 
 #define GYRO_XOUT_H 0x43

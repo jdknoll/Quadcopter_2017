@@ -30,7 +30,7 @@
 #include "motor_pwm.h"
 #include "ultrasonic.h"
 #include "uartterm/t_uart.h"
-#include "altitude_pid.h"
+#include "pid/altitude_pid.h"
 #include "config.h"
 
 
@@ -128,10 +128,7 @@ void TimerStart()
   ROM_TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC);
 
   //We set the load value so the timer interrupts
-  //freq =  ((ROM_SysCtlClockGet() / set_freq));
-
-  //ROM_TimerLoadSet(TIMER1_BASE, TIMER_A, freq);
-  ROM_TimerLoadSet(TIMER1_BASE, TIMER_A, pid.freq);
+  ROM_TimerLoadSet(TIMER1_BASE, TIMER_A, pid.altitude_freq);
 
   /*
     Enable the timeout interrupt. In count down mode it's when the timer reaches
@@ -165,7 +162,7 @@ void pwm_interrupt()
 	error = pid.set_point - distance_mm;
 
 	//call the PID loop to give updates on altitude
-	double timescale = 1/(double)pid.freq;
+	double timescale = 1/(double)pid.altitude_freq;
 	pid_update(error, timescale);
 
     // Sets the adjusted speed to the PWM pins
@@ -178,3 +175,37 @@ void pwm_interrupt()
     UARTprintf("Error: %d\n", (int)error);
 	#endif
 }
+
+void TimerStart2(int set_freq)
+{
+  ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER1);
+
+  /*
+    Configure the timer as periodic, by omission it's in count down mode.
+    It counts from the load value to 0 and then resets back to the load value.
+    REMEMBER: You need to configure the timer before setting the load and match
+  */
+  ROM_TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC);
+
+  //We set the load value so the timer interrupts
+  ROM_TimerLoadSet(TIMER1_BASE, TIMER_B, pid.leveling_freq);
+
+  /*
+    Enable the timeout interrupt. In count down mode it's when the timer reaches
+  0 and resets back to load. In count up mode it's when the timer reaches load
+  and resets back to 0.
+  */
+  ROM_IntEnable(INT_TIMER1B);
+  ROM_TimerIntEnable(TIMER1_BASE, TIMER_TIMB_TIMEOUT);
+  ROM_TimerEnable(TIMER1_BASE, TIMER_B);
+  ROM_IntPrioritySet(INT_TIMER1B, INT_PRIORITY_LEVEL_0);    //set the timer priority to the top priority
+}
+
+void pwm_interrupt2()
+{
+    // Clear the timer interrupt
+    TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
+
+
+}
+

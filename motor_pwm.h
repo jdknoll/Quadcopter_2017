@@ -27,6 +27,7 @@ void delayMS(int ms);
 void delaySEC(int sec);
 void clock_config();
 void pwm_interrupt();
+void pwm_interrupt2();
 void arm_the_motor();
 void pwm_configuration();
 void TimerStart();

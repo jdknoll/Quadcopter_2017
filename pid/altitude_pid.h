@@ -26,7 +26,8 @@ typedef struct {
     double PWM_motor1;
     double PWM_motor2;
     double PWM_motor3;
-    int freq;
+    int altitude_freq;
+    int leveling_freq;
 } t_PID;
 
 

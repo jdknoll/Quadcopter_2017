@@ -28,7 +28,7 @@
 #include "uartterm/t_uart.h"
 #include "ultrasonic.h"
 #include "uartterm/terminal.h"
-#include "altitude_pid.h"
+#include "pid/altitude_pid.h"
 
 void wait(int waitTime){
     int i = 0;
@@ -49,9 +49,6 @@ int main(void)
     // initialize pwm configuration
     pwm_configuration();
 
-    // initialize gpio configuration
-    pwm_gpio_configure();
-
     // arms the motor for start
     arm_the_motor();
 
@@ -71,15 +68,15 @@ int main(void)
     //PrintAccelConfigReg();
 
     // Initialize the GPIO for the sonic distance
-    initialize_ultrasonic();
-    wait(100000);
+    //initialize_ultrasonic();
+    //wait(100000);
 
-    // Initialize the PID loop
+    // Initialize the PID struct values
     pid_initialize();
 
     // initialize pwm timer
-    //TimerStart(100);
-    TimerStart();
+    //TimerStart();		// timer for the ultrasonic altitude loop
+    //TimerStart2();		// timer for the accelerometer leveling loop
 
     // Testing Loop
     while(1)
