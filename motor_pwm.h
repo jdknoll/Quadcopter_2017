@@ -26,14 +26,21 @@
 void delayMS(int ms);
 void delaySEC(int sec);
 void clock_config();
-void pwm_interrupt();
-void pwm_interrupt2();
+void altitude_PID_interrupt();
+void leveling_PID_interrupt();
 void arm_the_motor();
 void pwm_configuration();
 void TimerStart();
 void update_motors();
 
-extern int desired_height_cm;	// height for the copter
+typedef struct {
+    double motor0;
+    double motor1;
+    double motor2;
+    double motor3;
+} t_PWM;
+
+extern t_PWM pwm;
 
 
 #endif /* MOTOR_PWM_H_ */

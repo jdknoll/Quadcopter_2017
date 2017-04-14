@@ -11,7 +11,11 @@
 void pid_interrupt();
 void Timer1AIntHandler(void);
 void pid_initialize();
-void pid_update(double curr_error, double dt);
+
+#define ALTITUDE_MODE 0
+#define LEVELING_X_MODE 1
+#define LEVELING_Y_MODE 2
+
 
 typedef struct {
     double windup_guard;
@@ -21,16 +25,13 @@ typedef struct {
     double prev_error;
     double int_error;
     double set_point;
-    double control;
-    double PWM_motor0;
-    double PWM_motor1;
-    double PWM_motor2;
-    double PWM_motor3;
-    int altitude_freq;
-    int leveling_freq;
+    int freq;
 } t_PID;
 
+void pid_update(double curr_error, double dt, t_PID * pid, int mode);
 
-extern t_PID pid;
+extern t_PID altitude_pid;
+extern t_PID leveling_x_pid;
+extern t_PID leveling_y_pid;
 
 #endif /* ALTITUDE_PID_H_ */

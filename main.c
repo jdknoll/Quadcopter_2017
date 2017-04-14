@@ -25,10 +25,10 @@
 #include "I2C.h"
 #include "accelerometer.h"
 #include "motor_pwm.h"
+#include "pid/altitude_pid.h"
 #include "uartterm/t_uart.h"
 #include "ultrasonic.h"
 #include "uartterm/terminal.h"
-#include "pid/altitude_pid.h"
 
 void wait(int waitTime){
     int i = 0;
@@ -50,7 +50,7 @@ int main(void)
     pwm_configuration();
 
     // arms the motor for start
-    arm_the_motor();
+    //arm_the_motor();
 
     // initialize the UART
     initUART();
@@ -59,10 +59,10 @@ int main(void)
     initI2C1();
 
     // Initialize the Accelerometer
-    //InitializeAccel();
+    InitializeAccel();
 
     // Print out the WHO_AM_I register
-    //PrintAccelWhoAmI();
+    PrintAccelWhoAmI();
 
     // Print the accelerometer's configuration bits
     //PrintAccelConfigReg();
@@ -71,7 +71,7 @@ int main(void)
     //initialize_ultrasonic();
     //wait(100000);
 
-    // Initialize the PID struct values
+    // Initialize the PID and PWM struct values
     pid_initialize();
 
     // initialize pwm timer
@@ -81,13 +81,12 @@ int main(void)
     // Testing Loop
     while(1)
     {
-    	terminal();
-    	//QueryAccel();	//prints out accelerometer data
+    	//terminal();
+    	QueryAccel();	//prints out accelerometer data
+    	PrintAccelWhoAmI();
 
-        //wait(100000);
+        wait(100000);
         //UARTCharPut(UART0_BASE, '\n');
-
-
     }
 }
 

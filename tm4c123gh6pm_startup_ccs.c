@@ -44,8 +44,8 @@ extern void _c_int00(void);
 extern void UARTIntHandler(void);
 extern void ultrasonicTriggerTimerHandler(void);
 extern void ultrasonicEchoHandler(void);
-extern void pwm_interrupt();
-extern void pwm_interrupt2();
+extern void altitude_PID_interrupt();
+extern void leveling_PID_interrupt();
 
 
 //*****************************************************************************
@@ -111,8 +111,8 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // Watchdog timer
 	IntDefaultHandler,                      // Timer 0 subtimer A
     IntDefaultHandler,                      // Timer 0 subtimer B
-	pwm_interrupt,                      	   // Timer 1 subtimer A
-	pwm_interrupt2,                         // Timer 1 subtimer B
+	altitude_PID_interrupt,                 // Timer 1 subtimer A
+	leveling_PID_interrupt,                 // Timer 1 subtimer B
 	ultrasonicTriggerTimerHandler,          // Timer 2 subtimer A
     IntDefaultHandler,                      // Timer 2 subtimer B
     IntDefaultHandler,                      // Analog Comparator 0

@@ -11,7 +11,7 @@
 #include "driverlib/i2c.h"
 
 void initI2C1(void);
-uint32_t I2CReceive(uint32_t device_location, uint8_t reg_to_read);
+uint8_t I2CReceive(uint32_t device_location, uint8_t reg_to_read);
 void I2CWrite(uint32_t device_location, uint8_t reg_to_write, uint8_t info);
 
 

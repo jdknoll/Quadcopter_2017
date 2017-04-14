@@ -30,8 +30,14 @@
 #include "motor_pwm.h"
 #include "ultrasonic.h"
 #include "uartterm/t_uart.h"
-#include "pid/altitude_pid.h"
 #include "config.h"
+#include "pid/altitude_pid.h"
+
+t_PWM pwm;
+
+#define PWM_PERIOD 		5000
+#define MIN_MOTOR_SPEED	1950
+#define ARM_MOTOR_SPEED	1800
 
 
 void delaySEC(int sec)
@@ -72,16 +78,16 @@ void pwm_configuration()
     ROM_PWMGenConfigure(PWM1_BASE, PWM_GEN_3, PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
 
     // Set the Period (expressed in clock ticks)
-    ROM_PWMGenPeriodSet(PWM0_BASE, PWM_GEN_0, 5000);
-    ROM_PWMGenPeriodSet(PWM0_BASE, PWM_GEN_1, 5000);
-    ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_2, 5000);
-    ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_3, 5000);
+    ROM_PWMGenPeriodSet(PWM0_BASE, PWM_GEN_0, PWM_PERIOD);
+    ROM_PWMGenPeriodSet(PWM0_BASE, PWM_GEN_1, PWM_PERIOD);
+    ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_2, PWM_PERIOD);
+    ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_3, PWM_PERIOD);
 
     // Set PWM duty-50%
-    ROM_PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,1950);
-    ROM_PWMPulseWidthSet(PWM0_BASE, PWM_OUT_2,1950);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,1950);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,1950);
+    ROM_PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, MIN_MOTOR_SPEED);
+    ROM_PWMPulseWidthSet(PWM0_BASE, PWM_OUT_2, MIN_MOTOR_SPEED);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5, MIN_MOTOR_SPEED);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6, MIN_MOTOR_SPEED);
 
     // Enable the PWM generator
     ROM_PWMGenEnable(PWM0_BASE, PWM_GEN_0);
@@ -103,10 +109,10 @@ void arm_the_motor()
     {
         //TimerIntDisable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
 
-        ROM_PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,1800);
-        ROM_PWMPulseWidthSet(PWM0_BASE, PWM_OUT_2,1800);
-        ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,1800);
-        ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,1800);
+        ROM_PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,ARM_MOTOR_SPEED);
+        ROM_PWMPulseWidthSet(PWM0_BASE, PWM_OUT_2,ARM_MOTOR_SPEED);
+        ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,ARM_MOTOR_SPEED);
+        ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,ARM_MOTOR_SPEED);
 
         delaySEC(1);
 
@@ -128,14 +134,13 @@ void TimerStart()
   ROM_TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC);
 
   //We set the load value so the timer interrupts
-  ROM_TimerLoadSet(TIMER1_BASE, TIMER_A, pid.altitude_freq);
+  ROM_TimerLoadSet(TIMER1_BASE, TIMER_A, altitude_pid.freq);
 
   /*
     Enable the timeout interrupt. In count down mode it's when the timer reaches
   0 and resets back to load. In count up mode it's when the timer reaches load
   and resets back to 0.
   */
-  //IntMasterEnable();  //Interrupts are enabled in main
   ROM_IntEnable(INT_TIMER1A);
   ROM_TimerIntEnable(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
   ROM_TimerEnable(TIMER1_BASE, TIMER_A);
@@ -144,29 +149,33 @@ void TimerStart()
 
 // updates the motors to the values stored in the PWM struct
 void update_motors(){
-    ROM_PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, (int)pid.PWM_motor0);
-    ROM_PWMPulseWidthSet(PWM0_BASE, PWM_OUT_2, (int)pid.PWM_motor1);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5, (int)pid.PWM_motor2);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6, (int)pid.PWM_motor3);
+    ROM_PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, pwm.motor0);
+    ROM_PWMPulseWidthSet(PWM0_BASE, PWM_OUT_2, pwm.motor1);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5, pwm.motor2);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6, pwm.motor3);
 }
 
 
 
 // interrupt Handler for PWM speed
-void pwm_interrupt()
+void altitude_PID_interrupt()
 {
     // Clear the timer interrupt
     TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
 	int error;
 
-	error = pid.set_point - distance_mm;
+	error = altitude_pid.set_point - distance_mm;
 
 	//call the PID loop to give updates on altitude
-	double timescale = 1/(double)pid.altitude_freq;
-	pid_update(error, timescale);
+	double timescale = 1/(double)altitude_pid.freq;
+
+	//Disable the other interrupt while we update the motor values
+	ROM_TimerIntDisable(TIMER1_BASE, TIMER_TIMB_TIMEOUT);
+	pid_update(error, timescale, &altitude_pid, ALTITUDE_MODE);
 
     // Sets the adjusted speed to the PWM pins
 	update_motors();
+	ROM_TimerIntEnable(TIMER1_BASE, TIMER_TIMB_TIMEOUT);
 		
 	#ifdef _DEBUG_MODE
     UARTprintf("PID Control: %d\n", pid.control);
@@ -188,7 +197,7 @@ void TimerStart2(int set_freq)
   ROM_TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC);
 
   //We set the load value so the timer interrupts
-  ROM_TimerLoadSet(TIMER1_BASE, TIMER_B, pid.leveling_freq);
+  ROM_TimerLoadSet(TIMER1_BASE, TIMER_B, leveling_x_pid.freq);
 
   /*
     Enable the timeout interrupt. In count down mode it's when the timer reaches
@@ -201,11 +210,23 @@ void TimerStart2(int set_freq)
   ROM_IntPrioritySet(INT_TIMER1B, INT_PRIORITY_LEVEL_0);    //set the timer priority to the top priority
 }
 
-void pwm_interrupt2()
+void leveling_PID_interrupt()
 {
     // Clear the timer interrupt
     TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
 
+    int x_error = 0;
+    int y_error = 0;
 
+	double timescale = 1/(double)leveling_x_pid.freq;
+
+	//Disable the other interrupt while we update the motor values
+	ROM_TimerIntDisable(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
+    pid_update(x_error, timescale, &leveling_x_pid, LEVELING_X_MODE);
+    pid_update(y_error, timescale, &leveling_y_pid, LEVELING_Y_MODE);
+
+    // Sets the adjusted speed to the PWM pins
+	update_motors();
+    ROM_TimerIntEnable(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
 }
 

@@ -89,7 +89,7 @@ void I2CWrite(uint32_t device_location, uint8_t reg_to_write, uint8_t info)
 
 
 //read specified register on slave device
-uint32_t I2CReceive(uint32_t device_location, uint8_t reg_to_read)
+uint8_t I2CReceive(uint32_t device_location, uint8_t reg_to_read)
 {
     //specify that we are writing (a register address) to the
     //slave device

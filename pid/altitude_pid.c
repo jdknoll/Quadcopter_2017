@@ -1,35 +1,60 @@
 
+#include "altitude_pid.h"
+
 #include <stdbool.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "altitude_pid.h"
+#include "../motor_pwm.h"
 #include "../ultrasonic.h"
 #include "../uartterm/t_uart.h"
 
-#define alt_pid_freq 20000000
+#define WINDUP 200
+#define PGAIN  .023
+#define IGAIN  .004
+#define DGAIN  .0000002
+#define FREQ   200000
 
-t_PID pid;
+t_PID altitude_pid;
+t_PID leveling_x_pid;
+t_PID leveling_y_pid;
 
 
 void pid_initialize()
 {
     // set previous and integrated error to zero
-    pid.prev_error = 0;
-    pid.int_error = 0;
+    altitude_pid.prev_error = 0;
+    altitude_pid.int_error = 0;
+    altitude_pid.windup_guard = 200;
+    altitude_pid.p_gain = .023;			// p is more aggresive - scalar value
+    altitude_pid.i_gain = .004;			// keep i less than p - integral value
+    altitude_pid.d_gain = .0000002;
+    altitude_pid.set_point = 0;//100;
+    altitude_pid.freq = 1894000; 		//20000000
 
-    pid.windup_guard = 200;
-    pid.p_gain = .023;			// p is more aggresive - scalar value
-    pid.i_gain = .004;			// keep i less than p - integral value
-    pid.d_gain = .0000002;
-    pid.set_point = 0;//100;
-    pid.altitude_freq = 1894000; 		//20000000
-    pid.leveling_freq = 200000;
-    pid.PWM_motor0 = 1950;
-    pid.PWM_motor1 = 1950;
-    pid.PWM_motor2 = 1950;
-    pid.PWM_motor3 = 1950;
+    leveling_x_pid.prev_error = 0;
+    leveling_x_pid.int_error = 0;
+    leveling_x_pid.windup_guard = WINDUP;
+    leveling_x_pid.p_gain = PGAIN;			// p is more aggresive - scalar value
+    leveling_x_pid.i_gain = IGAIN;			// keep i less than p - integral value
+    leveling_x_pid.d_gain = DGAIN;
+    leveling_x_pid.set_point = 0;//100;
+    leveling_x_pid.freq = FREQ; 		//20000000
+
+    leveling_y_pid.prev_error = 0;
+    leveling_y_pid.int_error = 0;
+    leveling_y_pid.windup_guard = WINDUP;
+    leveling_y_pid.p_gain = PGAIN;			// p is more aggresive - scalar value
+    leveling_y_pid.i_gain = IGAIN;			// keep i less than p - integral value
+    leveling_y_pid.d_gain = DGAIN;
+    leveling_y_pid.set_point = 0;//100;
+    leveling_y_pid.freq = FREQ; 		//20000000
+
+    pwm.motor0 = 1950;
+    pwm.motor1 = 1950;
+    pwm.motor2 = 1950;
+    pwm.motor3 = 1950;
 }
 
 double pwm_saturate_add(double a, double b){
@@ -43,7 +68,7 @@ double pwm_saturate_add(double a, double b){
 	}
 }
 
-void pid_update(double curr_error, double dt)
+void pid_update(double curr_error, double dt, t_PID * pid, int mode)
 {
     double diff;
     double p_term;
@@ -51,35 +76,45 @@ void pid_update(double curr_error, double dt)
     double d_term;
 
     // integration with windup guarding
-    pid.int_error += (curr_error * dt);
+    pid->int_error += (curr_error * dt);
 
-    if (pid.int_error < -(pid.windup_guard)) {
-    	pid.int_error = -(pid.windup_guard);
+    if (pid->int_error < -(pid->windup_guard)) {
+    	pid->int_error = -(pid->windup_guard);
     	UARTprintf("Windup low\n");
-    } else if (pid.int_error > pid.windup_guard){ // integral windup control
-    	pid.int_error = pid.windup_guard;
+    } else if (pid->int_error > pid->windup_guard){ // integral windup control
+    	pid->int_error = pid->windup_guard;
     	UARTprintf("Windup high\n");
     }
 
     // differentiation
-    diff = ((curr_error - pid.prev_error) / dt);
+    diff = ((curr_error - pid->prev_error) / dt);
 
     // scaling
-    p_term = (pid.p_gain * curr_error);
-    i_term = (pid.i_gain * pid.int_error);
-    d_term = (pid.d_gain * diff);
+    p_term = (pid->p_gain * curr_error);
+    i_term = (pid->i_gain * pid->int_error);
+    d_term = (pid->d_gain * diff);
 
     // summation of terms
-    pid.control = p_term + i_term + d_term;
+    int control = p_term + i_term + d_term;
 
-    // calculate the double value for PWM_motors
-	pid.PWM_motor0 = pwm_saturate_add(pid.PWM_motor0, pid.control);
-	pid.PWM_motor1 = pwm_saturate_add(pid.PWM_motor1, pid.control);
-	pid.PWM_motor2 = pwm_saturate_add(pid.PWM_motor2, pid.control);
-	pid.PWM_motor3 = pwm_saturate_add(pid.PWM_motor3, pid.control);
+    if(mode == ALTITUDE_MODE){
+        // calculate the double value for PWM_motors
+    		pwm.motor0 = pwm_saturate_add(pwm.motor0, control);
+    		pwm.motor1 = pwm_saturate_add(pwm.motor1, control);
+    		pwm.motor2 = pwm_saturate_add(pwm.motor2, control);
+    		pwm.motor3 = pwm_saturate_add(pwm.motor3, control);
+    }if(mode == LEVELING_X_MODE){
+    		pwm.motor0 = pwm_saturate_add(pwm.motor0, control);
+    		pwm.motor1 = pwm_saturate_add(pwm.motor1, -control);
+    		pwm.motor2 = pwm_saturate_add(pwm.motor2, -control);
+    		pwm.motor3 = pwm_saturate_add(pwm.motor3, control);
+    }if(mode == LEVELING_Y_MODE){
+		pwm.motor0 = pwm_saturate_add(pwm.motor0, -control);
+		pwm.motor1 = pwm_saturate_add(pwm.motor1, control);
+		pwm.motor2 = pwm_saturate_add(pwm.motor2, control);
+		pwm.motor3 = pwm_saturate_add(pwm.motor3, -control);
+    }
 
 	// save current error as previous error for next iteration
-	pid.prev_error = curr_error;
-
-
+	pid->prev_error = curr_error;
 }

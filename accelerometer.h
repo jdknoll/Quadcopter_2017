@@ -6,6 +6,7 @@
  */
 
 #define MPU9250_ADDRESS 0x68
+
 #define COMPASS_ADDRESS 0x0C
 
 #define WHO_AM_I 0x75

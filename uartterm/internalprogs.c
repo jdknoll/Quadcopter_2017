@@ -15,8 +15,8 @@
 #include "terminal.h"
 #include "t_uart.h"
 #include "../motor_pwm.h"
-#include "../ultrasonic.h"
 #include "../pid/altitude_pid.h"
+#include "../ultrasonic.h"
 
 
 #define GYRO_XOUT_H 0x43
@@ -63,26 +63,26 @@ void matlab_pwm(char *pwm0, char *pwm1, char *pwm2, char *pwm3) {
 		return;
 	}
 
-	pid.PWM_motor0 = pwm0_int;
-	pid.PWM_motor1 = pwm1_int;
-	pid.PWM_motor2 = pwm2_int;
-	pid.PWM_motor3 = pwm3_int;
+	pwm.motor0 = pwm0_int;
+	pwm.motor1 = pwm1_int;
+	pwm.motor2 = pwm2_int;
+	pwm.motor3 = pwm3_int;
 
 	//sets the motor PWM values to the values stored in the struct
 	update_motors();
 }
 
 //set all PWM's to the argument given to the m command
-void pwm_all(char *pwm){
-	int pwm_int = atoi(pwm);
+void pwm_all(char *pwm_value){
+	int pwm_int = atoi(pwm_value);
 
 	if (pwm_int >= 5000){
 			return;
 	}
-	pid.PWM_motor0 = pwm_int;
-	pid.PWM_motor1 = pwm_int;
-	pid.PWM_motor2 = pwm_int;
-	pid.PWM_motor3 = pwm_int;
+	pwm.motor0 = pwm_int;
+	pwm.motor1 = pwm_int;
+	pwm.motor2 = pwm_int;
+	pwm.motor3 = pwm_int;
 
 	//sets the motor PWM values to the values stored in the struct
 	update_motors();
@@ -94,48 +94,47 @@ void matlab_req(){
 
 void print_setup(){
 	UARTprintf("\n");
-	UARTprintf("set_point (mm):      %d\n", (int)pid.set_point);
-	UARTprintf("proportional*1000:   %d\n", (int)(pid.p_gain*1000));
-	UARTprintf("integral*1000:       %d\n", (int)(pid.i_gain*1000));
-	UARTprintf("derivative*10000000:   %d\n", (int)(pid.d_gain*10000000));
-	UARTprintf("windup guard:        %d\n", (int)pid.windup_guard);
+	UARTprintf("set_point (mm):      %d\n", (int)altitude_pid.set_point);
+	UARTprintf("proportional*1000:   %d\n", (int)(altitude_pid.p_gain*1000));
+	UARTprintf("integral*1000:       %d\n", (int)(altitude_pid.i_gain*1000));
+	UARTprintf("derivative*10000000:   %d\n", (int)(altitude_pid.d_gain*10000000));
+	UARTprintf("windup guard:        %d\n", (int)altitude_pid.windup_guard);
 }
 
 // set the height point
 void set_point(char *set_point){
-	pid.set_point = atoi(set_point)*10;
+	altitude_pid.set_point = atoi(set_point)*10;
 	print_setup();
 }
 
 // set the proportional
 void set_p(char *set_p){
-	pid.p_gain = (double)atoi(set_p)/1000;
+	altitude_pid.p_gain = (double)atoi(set_p)/1000;
 	print_setup();
 }
 
 // set the integer value
 void set_i(char *set_i){
-	pid.i_gain = (double)atoi(set_i)/1000;
+	altitude_pid.i_gain = (double)atoi(set_i)/1000;
 	print_setup();
 }
 
 void set_d(char *set_d){
-	pid.d_gain = (double)atoi(set_d)/10000000;
+	altitude_pid.d_gain = (double)atoi(set_d)/10000000;
 	print_setup();
 }
 
 // go through the arming sequence again
 void arm() {
 	arm_the_motor();
-	pid.PWM_motor0 = 1950;
-	pid.PWM_motor1 = 1950;
-	pid.PWM_motor2 = 1950;
-	pid.PWM_motor3 = 1950;
+	pwm.motor0 = 1950;
+	pwm.motor1 = 1950;
+	pwm.motor2 = 1950;
+	pwm.motor3 = 1950;
 }
 
 // set the wind-up guard
 void set_w(char *set_w){
-	pid.windup_guard = (double)atoi(set_w);
+	altitude_pid.windup_guard = (double)atoi(set_w);
 	print_setup();
 }
-
