@@ -32,6 +32,7 @@
 #include "uartterm/t_uart.h"
 #include "config.h"
 #include "pid/altitude_pid.h"
+#include "accelerometer/accelerometer2.h"
 
 t_PWM pwm;
 
@@ -214,6 +215,7 @@ void leveling_PID_interrupt()
 {
     // Clear the timer interrupt
     TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
+    updateAccelerometer();
 
     int x_error = 0;
     int y_error = 0;

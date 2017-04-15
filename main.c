@@ -23,7 +23,8 @@
 #include "driverlib/sysctl.h"
 
 #include "I2C.h"
-#include "accelerometer.h"
+#include "accelerometer/accelerometer.h"
+#include "accelerometer/accelerometer2.h"
 #include "motor_pwm.h"
 #include "pid/altitude_pid.h"
 #include "uartterm/t_uart.h"
@@ -56,13 +57,15 @@ int main(void)
     initUART();
 
     // Initialize the I2C1 interface
-    initI2C1();
+    //initI2C1();
 
     // Initialize the Accelerometer
-    InitializeAccel();
+    //InitializeAccel();
+    //AccelSelfTest();
+    initializeAccelADC();
 
     // Print out the WHO_AM_I register
-    PrintAccelWhoAmI();
+    //PrintAccelWhoAmI();
 
     // Print the accelerometer's configuration bits
     //PrintAccelConfigReg();
@@ -81,14 +84,12 @@ int main(void)
     // Testing Loop
     while(1)
     {
-    	//terminal();
-    	QueryAccel();	//prints out accelerometer data
-    	PrintAccelWhoAmI();
+    		queryAccel2();
+    		//terminal();
+    		//QueryAccel();	//prints out accelerometer data
+    		//PrintAccelWhoAmI();
 
         wait(100000);
         //UARTCharPut(UART0_BASE, '\n');
     }
 }
-
-
-
