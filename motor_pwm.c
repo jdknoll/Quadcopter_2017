@@ -215,7 +215,7 @@ void leveling_PID_interrupt()
 {
     // Clear the timer interrupt
     TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
-    updateAccelerometer();
+    update_x_Accelerometer();
 
     int x_error = 0;
     int y_error = 0;

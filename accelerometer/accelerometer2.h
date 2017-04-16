@@ -12,11 +12,14 @@ typedef struct{
 	int xout;
 	int yout;
 	int zout;
-} accelerometer;
+} accelerometer_t;
 
-extern accelerometer accel;
+extern accelerometer_t accel;
 void initializeAccelADC();
 void updateAccelerometer();
+void update_x_Accelerometer();
+void update_y_Accelerometer();
+void update_z_Accelerometer();
 void queryAccel2();
 
 #endif /* ACCELEROMETER_ACCELEROMETER2_H_ */
