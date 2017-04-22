@@ -60,10 +60,15 @@ void InitializeAccel(){
 
 void QueryAccel(){
 	// xout = (ACCEL_XOUT_H << 8) + ACCEL_XOUT_L
-    //UARTprintf("X Accelerometer output: %d\n", (I2CReceive(MPU9250_ADDRESS, 0x3B) << 8) + I2CReceive(MPU9250_ADDRESS, 0x3C));
-    UARTprintf("X_HIGH: %d\n", I2CReceive(MPU9250_ADDRESS, 0x3B));
-    UARTprintf("X_LOW:  %d\n", I2CReceive(MPU9250_ADDRESS, 0x3C));
-    UARTprintf("Y Accelerometer output: %d\n", (I2CReceive(MPU9250_ADDRESS, 0x3D) << 8) + I2CReceive(MPU9250_ADDRESS, 0x3E));
+	int16_t signedx = (I2CReceive(MPU9250_ADDRESS, 0x3B) << 8) + I2CReceive(MPU9250_ADDRESS, 0x3C);
+	uint16_t unsignedx = (I2CReceive(MPU9250_ADDRESS, 0x3B) << 8) + I2CReceive(MPU9250_ADDRESS, 0x3C);
+
+
+    UARTprintf("Unsigned X Accelerometer output: %d\n", unsignedx);
+    UARTprintf("Signed   X Accelerometer output: %d\n", signedx);
+    //UARTprintf("X_HIGH: %d\n", I2CReceive(MPU9250_ADDRESS, 0x3B));
+    //UARTprintf("X_LOW:  %d\n", I2CReceive(MPU9250_ADDRESS, 0x3C));
+    //UARTprintf("Y Accelerometer output: %d\n", (I2CReceive(MPU9250_ADDRESS, 0x3D) << 8) + I2CReceive(MPU9250_ADDRESS, 0x3E));
     //UARTprintf("Z Accelerometer output: %d\n", (I2CReceive(MPU9250_ADDRESS, 0x3F) << 8) + I2CReceive(MPU9250_ADDRESS, 0x40));
 }
 
