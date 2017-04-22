@@ -72,7 +72,7 @@ void pwm_configuration()
     ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM1);
 
     //Setting the Pulse Width Modulation Clock
-    ROM_SysCtlPWMClockSet(SYSCTL_PWMDIV_8);
+    ROM_SysCtlPWMClockSet(SYSCTL_PWMDIV_32);
 
     // Configure PWM Options
     // PWM_GEN_0 Covers M1PWM0 and M1PWM1
