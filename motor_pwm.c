@@ -33,10 +33,10 @@
 
 //    int fade_Up = 1;
     unsigned long increment = 1;
-    int PWM_motor0 = 1950;
-    int PWM_motor1 = 1950;
-    int PWM_motor2 = 1950;
-    int PWM_motor3 = 1950;
+    int PWM_motor0 = 2802;
+    int PWM_motor1 = 2802;
+    int PWM_motor2 = 2802;
+    int PWM_motor3 = 2802;
 
 
     int desired_height_cm;
@@ -85,16 +85,16 @@ void pwm_configuration()
     ROM_PWMGenConfigure(PWM1_BASE, PWM_GEN_3, PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
 
     // Set the Period (expressed in clock ticks)
-    ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_0, 5000);
-    ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_1, 5000);
-    ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_2, 5000);
-    ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_3, 5000);
+    ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_0, 5721);
+    ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_1, 5721);
+    ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_2, 5721);
+    ROM_PWMGenPeriodSet(PWM1_BASE, PWM_GEN_3, 5721);
 
     // Set PWM duty-50%
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_0,1950);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_2,1950);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,1950);
-    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,1950);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_0,2802);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_2,2802);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,2802);
+    ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,2802);
 
     // Enable the PWM generator
     ROM_PWMGenEnable(PWM1_BASE, PWM_GEN_0);
@@ -114,10 +114,10 @@ void arm_the_motor()
     {
         //TimerIntDisable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
 
-        ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_0,1800);
-        ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_2,1800);
-        ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,1800);
-        ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,1800);
+        ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_0,2802);
+        ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_2,2802);
+        ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,2802);
+        ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,2802);
 
         delaySEC(1);
 
@@ -158,10 +158,10 @@ void TimerStart(int set_freq)
 
 int pwm_saturate_add(int a, int b){
 	int output = a + b;
-	if(output > 2250){
-		return 2250;
-	} else  if (output < 1950){
-		return 1950;
+	if(output > 4291){
+		return 4291;
+	} else  if (output < 2802){
+		return 2802;
 	} else {
 		return output;
 	}

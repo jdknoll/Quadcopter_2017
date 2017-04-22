@@ -58,7 +58,7 @@ void matlab_pwm(char *pwm0, char *pwm1, char *pwm2, char *pwm3) {
 	int pwm2_int = atoi(pwm2);
 	int pwm3_int = atoi(pwm3);
 
-	if ((pwm0_int >= 5000) || (pwm1_int >= 5000) || (pwm2_int >= 5000) || (pwm3_int >= 5000)){
+	if ((pwm0_int >= 4291) || (pwm1_int >= 4291) || (pwm2_int >= 4291) || (pwm3_int >= 4291)){
 		return;
 	}
 
@@ -72,7 +72,7 @@ void matlab_pwm(char *pwm0, char *pwm1, char *pwm2, char *pwm3) {
 void pwm_all(char *pwm){
 	int pwm_int = atoi(pwm);
 
-	if (pwm_int >= 5000){
+	if (pwm_int >= 4291){
 			return;
 	}
 
