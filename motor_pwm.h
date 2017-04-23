@@ -31,6 +31,7 @@ void leveling_PID_interrupt();
 void arm_the_motor();
 void pwm_configuration();
 void TimerStart();
+void TimerStart2();
 void update_motors();
 
 typedef struct {
@@ -42,5 +43,18 @@ typedef struct {
 
 extern t_PWM pwm;
 
+//Values for the Turnigy Plush 30A
+#define PWM_PERIOD 		5735			//5735
+#define MAX_MOTOR_SPEED 	3900			//4290
+#define MIN_MOTOR_SPEED 	3000
+#define ARM_MOTOR_SPEED 	2800
+#define DIV_VALUE			SYSCTL_PWMDIV_32
+
+//Values for the Afro ESC
+//#define PWM_PERIOD 		5000
+//#define MAX_MOTOR_SPEED 	3900
+//#define MIN_MOTOR_SPEED 	1950
+//#define ARM_MOTOR_SPEED 	1800
+//#define DIV_VALUE		SYSCTL_PWMDIV_8
 
 #endif /* MOTOR_PWM_H_ */

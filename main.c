@@ -25,7 +25,7 @@
 #include "I2C.h"
 #include "accelerometer.h"
 #include "motor_pwm.h"
-#include "pid/altitude_pid.h"
+#include "pid/pid.h"
 #include "uartterm/t_uart.h"
 #include "ultrasonic.h"
 #include "uartterm/terminal.h"
@@ -50,7 +50,7 @@ int main(void)
     pwm_configuration();
 
     // arms the motor for start
-    //arm_the_motor();
+    arm_the_motor();
 
     // initialize the UART
     initUART();
@@ -68,22 +68,22 @@ int main(void)
     //PrintAccelConfigReg();
 
     // Initialize the GPIO for the sonic distance
-    initialize_ultrasonic();
+    //initialize_ultrasonic();
     //wait(100000);
 
     // Initialize the PID and PWM struct values
     pid_initialize();
 
     // initialize pwm timer
-    TimerStart();		// timer for the ultrasonic altitude loop
-    //TimerStart2();		// timer for the accelerometer leveling loop
+    //TimerStart();		// timer for the ultrasonic altitude loop
+    TimerStart2();		// timer for the accelerometer leveling loop
 
     // Testing Loop
     while(1)
     {
     	//terminal();
-    	QueryAccel();	//prints out accelerometer data
-    	PrintAccelWhoAmI();
+    	PrintAccel();	//prints out accelerometer data
+    	//PrintAccelWhoAmI();
 
         wait(100000);
         //UARTCharPut(UART0_BASE, '\n');

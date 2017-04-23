@@ -25,7 +25,7 @@ typedef struct {
     double prev_error;
     double int_error;
     double set_point;
-    int freq;
+    int clock_ticks;
 } t_PID;
 
 void pid_update(double curr_error, double dt, t_PID * pid, int mode);

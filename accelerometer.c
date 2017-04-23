@@ -19,6 +19,8 @@
 #define SMPLRT_DIV		0x19
 #define USER_CTRL		0x6A
 
+accel_t accel;
+
 //Initializes the accelerometer with 4g or 2g range.
 void InitializeAccel(){
 	uint8_t c;
@@ -58,18 +60,15 @@ void InitializeAccel(){
 //    wait(1000000);
 }
 
+void PrintAccel(){
+	//UARTprintf("X Accelerometer output: %d\n", accel.x);
+	UARTprintf("%d\n", accel.x);
+}
+
 void QueryAccel(){
-	// xout = (ACCEL_XOUT_H << 8) + ACCEL_XOUT_L
-	int16_t signedx = (I2CReceive(MPU9250_ADDRESS, 0x3B) << 8) + I2CReceive(MPU9250_ADDRESS, 0x3C);
-	uint16_t unsignedx = (I2CReceive(MPU9250_ADDRESS, 0x3B) << 8) + I2CReceive(MPU9250_ADDRESS, 0x3C);
-
-
-    UARTprintf("Unsigned X Accelerometer output: %d\n", unsignedx);
-    UARTprintf("Signed   X Accelerometer output: %d\n", signedx);
-    //UARTprintf("X_HIGH: %d\n", I2CReceive(MPU9250_ADDRESS, 0x3B));
-    //UARTprintf("X_LOW:  %d\n", I2CReceive(MPU9250_ADDRESS, 0x3C));
-    //UARTprintf("Y Accelerometer output: %d\n", (I2CReceive(MPU9250_ADDRESS, 0x3D) << 8) + I2CReceive(MPU9250_ADDRESS, 0x3E));
-    //UARTprintf("Z Accelerometer output: %d\n", (I2CReceive(MPU9250_ADDRESS, 0x3F) << 8) + I2CReceive(MPU9250_ADDRESS, 0x40));
+	accel.x = (I2CReceive(MPU9250_ADDRESS, 0x3B) << 8) + I2CReceive(MPU9250_ADDRESS, 0x3C);
+    accel.y = (I2CReceive(MPU9250_ADDRESS, 0x3D) << 8) + I2CReceive(MPU9250_ADDRESS, 0x3E);
+    //accel.z = (I2CReceive(MPU9250_ADDRESS, 0x3F) << 8) + I2CReceive(MPU9250_ADDRESS, 0x40);
 }
 
 void PrintAccelConfigReg(){

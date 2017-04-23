@@ -15,7 +15,7 @@
 #include "terminal.h"
 #include "t_uart.h"
 #include "../motor_pwm.h"
-#include "../pid/altitude_pid.h"
+#include "../pid/pid.h"
 #include "../ultrasonic.h"
 
 
@@ -59,7 +59,7 @@ void matlab_pwm(char *pwm0, char *pwm1, char *pwm2, char *pwm3) {
 	int pwm2_int = atoi(pwm2);
 	int pwm3_int = atoi(pwm3);
 
-	if ((pwm0_int >= 5000) || (pwm1_int >= 5000) || (pwm2_int >= 5000) || (pwm3_int >= 5000)){
+	if ((pwm0_int >= MAX_MOTOR_SPEED) || (pwm1_int >= MAX_MOTOR_SPEED) || (pwm2_int >= MAX_MOTOR_SPEED) || (pwm3_int >= MAX_MOTOR_SPEED)){
 		return;
 	}
 
@@ -76,7 +76,7 @@ void matlab_pwm(char *pwm0, char *pwm1, char *pwm2, char *pwm3) {
 void pwm_all(char *pwm_value){
 	int pwm_int = atoi(pwm_value);
 
-	if (pwm_int >= 5000){
+	if (pwm_int >= MAX_MOTOR_SPEED){
 			return;
 	}
 	pwm.motor0 = pwm_int;
@@ -127,10 +127,10 @@ void set_d(char *set_d){
 // go through the arming sequence again
 void arm() {
 	arm_the_motor();
-	pwm.motor0 = 1950;
-	pwm.motor1 = 1950;
-	pwm.motor2 = 1950;
-	pwm.motor3 = 1950;
+	pwm.motor0 = MIN_MOTOR_SPEED;
+	pwm.motor1 = MIN_MOTOR_SPEED;
+	pwm.motor2 = MIN_MOTOR_SPEED;
+	pwm.motor3 = MIN_MOTOR_SPEED;
 }
 
 // set the wind-up guard

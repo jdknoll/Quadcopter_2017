@@ -18,8 +18,17 @@
 #ifndef ACCELEROMETER_H_
 #define ACCELEROMETER_H_
 
+typedef struct{
+	int16_t x;
+	int16_t y;
+	int16_t z;
+} accel_t;
+
+extern accel_t accel;
+
 void InitializeAccel();
 void wait(int waitTime);
+void PrintAccel();
 void QueryAccel();
 void PrintAccelConfigReg();
 void PrintAccelWhoAmI();
