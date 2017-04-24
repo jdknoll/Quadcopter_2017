@@ -111,7 +111,7 @@ void arm_the_motor()
         ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_5,ARM_MOTOR_SPEED);
         ROM_PWMPulseWidthSet(PWM1_BASE, PWM_OUT_6,ARM_MOTOR_SPEED);
 
-        delayMS(1000);
+        delayMS(1500);
 
         //TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
 

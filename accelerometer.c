@@ -44,7 +44,8 @@ void InitializeAccel(){
     //Get the current ACCEL_CONFIG2 value
     c = I2CReceive(MPU9250_ADDRESS, ACCEL_CONFIG2);
     c = c & ~0x0F; 									// clear accel_fchoice_b and A_DLPFG bits
-    c = c | 0x01;									// set the sample rate to 4khz
+    //c = c | 0x04;									// turn on the accel_fchoice_b bit
+    c = c | 0x05;									// set the sample rate to 1khz
     I2CWrite(MPU9250_ADDRESS, ACCEL_CONFIG2, c);
 
     //set SBYB (bit 0) to 1
@@ -66,8 +67,18 @@ void PrintAccel(){
 }
 
 void QueryAccel(){
+//	int32_t xval = 0;
+//	int i;
+//	for (i = 0; i < 10; i++){
+//		xval += (int16_t)((I2CReceive(MPU9250_ADDRESS, 0x3B) << 8) + I2CReceive(MPU9250_ADDRESS, 0x3C));
+//	}
+//	//accel.x = (I2CReceive(MPU9250_ADDRESS, 0x3B) << 8) + I2CReceive(MPU9250_ADDRESS, 0x3C);
+//	accel.x = (accel.x + xval/10)/2;
+
+
+
 	accel.x = (I2CReceive(MPU9250_ADDRESS, 0x3B) << 8) + I2CReceive(MPU9250_ADDRESS, 0x3C);
-    accel.y = (I2CReceive(MPU9250_ADDRESS, 0x3D) << 8) + I2CReceive(MPU9250_ADDRESS, 0x3E);
+    //accel.y = (I2CReceive(MPU9250_ADDRESS, 0x3D) << 8) + I2CReceive(MPU9250_ADDRESS, 0x3E);
     //accel.z = (I2CReceive(MPU9250_ADDRESS, 0x3F) << 8) + I2CReceive(MPU9250_ADDRESS, 0x40);
 }
 

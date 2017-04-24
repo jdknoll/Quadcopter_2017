@@ -45,7 +45,7 @@ extern t_PWM pwm;
 
 //Values for the Turnigy Plush 30A
 #define PWM_PERIOD 		5735			//5735
-#define MAX_MOTOR_SPEED 	3900			//4290
+#define MAX_MOTOR_SPEED 	4000			//4290
 #define MIN_MOTOR_SPEED 	3000
 #define ARM_MOTOR_SPEED 	2800
 #define DIV_VALUE			SYSCTL_PWMDIV_32

@@ -94,33 +94,33 @@ void matlab_req(){
 
 void print_setup(){
 	UARTprintf("\n");
-	UARTprintf("set_point (mm):      %d\n", (int)altitude_pid.set_point);
-	UARTprintf("proportional*1000:   %d\n", (int)(altitude_pid.p_gain*1000));
-	UARTprintf("integral*1000:       %d\n", (int)(altitude_pid.i_gain*1000));
-	UARTprintf("derivative*10000000:   %d\n", (int)(altitude_pid.d_gain*10000000));
-	UARTprintf("windup guard:        %d\n", (int)altitude_pid.windup_guard);
+	UARTprintf("set_point (mm):      %d\n", (int)leveling_x_pid.set_point);
+	UARTprintf("proportional*10000:  %d\n", (int)(leveling_x_pid.p_gain*10000));
+	UARTprintf("integral*10000:      %d\n", (int)(leveling_x_pid.i_gain*10000));
+	UARTprintf("derivative*10000000: %d\n", (int)(leveling_x_pid.d_gain*10000000));
+	UARTprintf("windup guard:        %d\n", (int)leveling_x_pid.windup_guard);
 }
 
 // set the height point
 void set_point(char *set_point){
-	altitude_pid.set_point = atoi(set_point)*10;
+	leveling_x_pid.set_point = atoi(set_point)*10;
 	print_setup();
 }
 
 // set the proportional
 void set_p(char *set_p){
-	altitude_pid.p_gain = (double)atoi(set_p)/1000;
+	leveling_x_pid.p_gain = (double)atoi(set_p)/10000;
 	print_setup();
 }
 
 // set the integer value
 void set_i(char *set_i){
-	altitude_pid.i_gain = (double)atoi(set_i)/1000;
+	leveling_x_pid.i_gain = (double)atoi(set_i)/10000;
 	print_setup();
 }
 
 void set_d(char *set_d){
-	altitude_pid.d_gain = (double)atoi(set_d)/10000000;
+	leveling_x_pid.d_gain = (double)atoi(set_d)/10000000;
 	print_setup();
 }
 

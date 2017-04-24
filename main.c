@@ -81,11 +81,11 @@ int main(void)
     // Testing Loop
     while(1)
     {
-    	//terminal();
-    	PrintAccel();	//prints out accelerometer data
+    	terminal();
+    	//PrintAccel();	//prints out accelerometer data
     	//PrintAccelWhoAmI();
 
-        wait(100000);
+        //wait(18000);
         //UARTCharPut(UART0_BASE, '\n');
     }
 }

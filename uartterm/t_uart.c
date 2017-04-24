@@ -22,6 +22,9 @@
 
 int echo = 1; //by default, echo the input
 
+#define UART_BASE 	UART0_BASE
+#define UART_INT		INT_UART0
+
 /*
  * Handles the interrupt from a UART incoming communication
  */
@@ -31,17 +34,17 @@ void UARTIntHandler(void)
 
     //get interrupt status
     uint32_t ui32Status;
-	ui32Status = ROM_UARTIntStatus(UART0_BASE, true);
+	ui32Status = ROM_UARTIntStatus(UART_BASE, true);
 
-    while(ROM_UARTCharsAvail(UART0_BASE)) //loop while there are chars
+    while(ROM_UARTCharsAvail(UART_BASE)) //loop while there are chars
     {
-    		ch = ROM_UARTCharGetNonBlocking(UART0_BASE);
+    		ch = ROM_UARTCharGetNonBlocking(UART_BASE);
     		if(echo){
-    			ROM_UARTCharPutNonBlocking(UART0_BASE, ch); //echo character
+    			ROM_UARTCharPutNonBlocking(UART_BASE, ch); //echo character
     		}
     }
     //clear the asserted interrupt
-    ROM_UARTIntClear(UART0_BASE, ui32Status);
+    ROM_UARTIntClear(UART_BASE, ui32Status);
 }
 
 
@@ -67,13 +70,13 @@ void initUART(void){
 	//makes sure that UARTprint references this UART
     UARTStdioConfig(0, BAUDRATE, CLK);
 
-    ROM_UARTConfigSetExpClk(UART0_BASE, SysCtlClockGet(), BAUDRATE, (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
+    ROM_UARTConfigSetExpClk(UART_BASE, SysCtlClockGet(), BAUDRATE, (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
 
     //Allow interrupt-based UART interface
     //IntMasterEnable();	//Interrupts are enabled in main
-    ROM_IntEnable(INT_UART0);
-    ROM_UARTIntEnable(UART0_BASE, UART_INT_RX | UART_INT_RT);
-    ROM_IntPrioritySet(INT_UART0,   0x20);	// set the priority lower than the pwm
+    ROM_IntEnable(UART_INT);
+    ROM_UARTIntEnable(UART_BASE, UART_INT_RX | UART_INT_RT);
+    ROM_IntPrioritySet(UART_INT,   0x20);	// set the priority lower than the pwm
 }
 
 /*
