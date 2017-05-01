@@ -39,7 +39,7 @@ t_PWM pwm;
 
 void delayMS(int ms)
 {
-    ROM_SysCtlDelay( (ROM_SysCtlClockGet()/(3*1000))*ms );
+    `( (ROM_SysCtlClockGet()/(3*1000))*ms );
 }
 
 void pwm_configuration()

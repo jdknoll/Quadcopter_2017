@@ -80,6 +80,7 @@ void QueryAccel(){
 	accel.x = (I2CReceive(MPU9250_ADDRESS, 0x3B) << 8) + I2CReceive(MPU9250_ADDRESS, 0x3C);
     //accel.y = (I2CReceive(MPU9250_ADDRESS, 0x3D) << 8) + I2CReceive(MPU9250_ADDRESS, 0x3E);
     //accel.z = (I2CReceive(MPU9250_ADDRESS, 0x3F) << 8) + I2CReceive(MPU9250_ADDRESS, 0x40);
+	PrintAccel();
 }
 
 void PrintAccelConfigReg(){

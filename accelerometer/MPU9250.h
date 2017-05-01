@@ -170,15 +170,9 @@
 #define ZA_OFFSET_H        0x7D
 #define ZA_OFFSET_L        0x7E
 
-// Using the MPU-9250 breakout board, ADO is set to 0
-// Seven-bit device address is 110100 for ADO = 0 and 110101 for ADO = 1
-#define ADO 0
-#if ADO
-#define MPU9250_ADDRESS 0x69  // Device address when ADO = 1
-#else
+
 #define MPU9250_ADDRESS 0x68  // Device address when ADO = 0
 #define AK8963_ADDRESS  0x0C   // Address of magnetometer
-#endif // AD0
 
 #define READ_FLAG 0x80
 #define NOT_SPI -1

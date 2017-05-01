@@ -1,7 +1,12 @@
 #include <stdint.h>
 #include "MPU9250.h"
-#include "driverlib/rom.h"
-#include "../uartterm/t_uart.h"
+
+
+extern "C"
+{
+	#include "driverlib/rom.h"
+	#include "../uartterm/t_uart.h"
+}
 
 //==============================================================================
 //====== Set of useful function to access acceleration. gyroscope, magnetometer,
@@ -692,8 +697,8 @@ void MPU9250::magCalMPU9250(float * bias_dest, float * scale_dest)
   scale_dest[0] = avg_rad / ((float)mag_scale[0]);
   scale_dest[1] = avg_rad / ((float)mag_scale[1]);
   scale_dest[2] = avg_rad / ((float)mag_scale[2]);
-
-  Serial.println(F("Mag Calibration done!"));
+  UARTprintf("Mag Calibration done!\n");
+  //Serial.println(F("Mag Calibration done!"));
 }
 
 // Wire.h read and write protocols
@@ -723,8 +728,9 @@ uint8_t MPU9250::writeByteSPI(uint8_t registerAddress, uint8_t writeData)
   deselect();
   SPI.endTransaction();
 #ifdef SERIAL_DEBUG
-  Serial.print("MPU9250::writeByteSPI slave returned: 0x");
-  Serial.println(returnVal, HEX);
+  UARTprintf("MPU9250::writeByteSPI slave returned: 0x%X\n", returnVal);
+  //Serial.print("MPU9250::writeByteSPI slave returned: 0x");
+  //Serial.println(returnVal, HEX);
 #endif
   return returnVal;
 }
@@ -828,8 +834,9 @@ uint8_t MPU9250::readBytesSPI(uint8_t registerAddress, uint8_t count,
   {
     dest[i] = SPI.transfer(0x00);
 #ifdef SERIAL_DEBUG
-    Serial.print("readBytesSPI::Read byte: 0x");
-    Serial.println(dest[i], HEX);
+    UARTprintf("readBytesSPI::Read byte: 0x%X\n", dest[i]);
+    //Serial.print("readBytesSPI::Read byte: 0x");
+    //Serial.println(dest[i], HEX);
 #endif
   }
 
@@ -924,7 +931,8 @@ bool MPU9250::magInit()
   // TODO: Remove this code
   uint8_t ret = ak8963WhoAmI_SPI();
 #ifdef SERIAL_DEBUG
-  Serial.print("MPU9250::magInit to return ");
+  UARTprintf("MPU9250::magInit to return ")
+  //Serial.print("MPU9250::magInit to return ");
   Serial.println((ret == 0x48) ? "true" : "false");
 #endif
   return ret == 0x48;
