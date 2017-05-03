@@ -1,4 +1,6 @@
 #include <stdint.h>
+#include <math.h>
+//#include "tiva_uno.h"
 #include "MPU9250.h"
 
 
@@ -6,7 +8,10 @@ extern "C"
 {
 	#include "driverlib/rom.h"
 	#include "../uartterm/t_uart.h"
+	#include "../I2C.h"
 }
+
+#define F(string_literal) (reinterpret_cast<const __FlashStringHelper *>(PSTR(string_literal)))
 
 //==============================================================================
 //====== Set of useful function to access acceleration. gyroscope, magnetometer,
@@ -16,26 +21,14 @@ void delay(int ms)
 {
     ROM_SysCtlDelay( (ROM_SysCtlClockGet()/(3*1000))*ms );
 }
-MPU9250::MPU9250(int8_t cspin /*=NOT_SPI*/) // Uses I2C communication by default
-{
-  // Use hardware SPI communication
-  // If used with sparkfun breakout board
-  // https://www.sparkfun.com/products/13762 , change the pre-soldered JP2 to
-  // enable SPI (solder middle and left instead of middle and right) pads are
-  // very small and re-soldering can be very tricky. I2C highly recommended.
-  if ((cspin > NOT_SPI) && (cspin < NUM_DIGITAL_PINS))
-  {
-    _csPin = cspin;
-    SPI.begin();
-    pinMode(_csPin, OUTPUT);
-    deselect();
-  }
-  else
-  {
-    _csPin = NOT_SPI;
-    Wire.begin();
-  }
-}
+
+
+//Starts the instance of I2C wire communication protocol.
+//We won't need to do this as we are using a C implementation of I2C
+//MPU9250::MPU9250(int8_t cspin /*=NOT_SPI*/) // Uses I2C communication by default
+//{
+//    Wire.begin();
+//}
 
 void MPU9250::getMres()
 {
@@ -506,8 +499,7 @@ void MPU9250::MPU9250SelfTest(float * destination)
   // Get average current values of gyro and acclerometer
   for (int ii = 0; ii < 200; ii++)
   {
-Serial.print("BHW::ii = ");
-Serial.println(ii);
+UARTprintf("BHW::ii = %d\n", ii);
     // Read the six raw data registers into data array
     readBytes(MPU9250_ADDRESS, ACCEL_XOUT_H, 6, &rawData[0]);
     // Turn the MSB and LSB into a signed 16-bit value
@@ -623,9 +615,8 @@ void MPU9250::magCalMPU9250(float * bias_dest, float * scale_dest)
   // Make sure resolution has been calculated
   getMres();
 
-  Serial.println(F("Mag Calibration: Wave device in a figure 8 until done!"));
-  Serial.println(
-      F("  4 seconds to get ready followed by 15 seconds of sampling)"));
+  UARTprintf("Mag Calibration: Wave device in a figure 8 until done!\n");
+  UARTprintf("  4 seconds to get ready followed by 15 seconds of sampling)\n");
   delay(4000);
 
   // shoot for ~fifteen seconds of mag data
@@ -715,177 +706,66 @@ uint8_t MPU9250::writeByte(uint8_t deviceAddress, uint8_t registerAddress,
   }
 }
 
-uint8_t MPU9250::writeByteSPI(uint8_t registerAddress, uint8_t writeData)
+uint8_t MPU9250::writeByteWire(uint8_t deviceAddress, uint8_t registerAddress, uint8_t data)
 {
-  uint8_t returnVal;
+//  Wire.beginTransmission(deviceAddress);  // Initialize the Tx buffer
+//  Wire.write(registerAddress);      // Put slave register address in Tx buffer
+//  Wire.write(data);                 // Put data in Tx buffer
+//  Wire.endTransmission();           // Send the Tx buffer
 
-  SPI.beginTransaction(SPISettings(SPI_DATA_RATE, MSBFIRST, SPI_MODE));
-  select();
-
-  SPI.transfer(registerAddress);
-  returnVal = SPI.transfer(writeData);
-
-  deselect();
-  SPI.endTransaction();
-#ifdef SERIAL_DEBUG
-  UARTprintf("MPU9250::writeByteSPI slave returned: 0x%X\n", returnVal);
-  //Serial.print("MPU9250::writeByteSPI slave returned: 0x");
-  //Serial.println(returnVal, HEX);
-#endif
-  return returnVal;
-}
-
-uint8_t MPU9250::writeByteWire(uint8_t deviceAddress, uint8_t registerAddress,
-                            uint8_t data)
-{
-  Wire.beginTransmission(deviceAddress);  // Initialize the Tx buffer
-  Wire.write(registerAddress);      // Put slave register address in Tx buffer
-  Wire.write(data);                 // Put data in Tx buffer
-  Wire.endTransmission();           // Send the Tx buffer
-  // TODO: Fix this to return something meaningful
-  return NULL;
+  I2CWrite(deviceAddress, registerAddress, data);
+  //TODO: Turn this into something useful
+  return 0;
 }
 
 // Read a byte from given register on device. Calls necessary SPI or I2C
 // implementation. This was configured in the constructor.
 uint8_t MPU9250::readByte(uint8_t deviceAddress, uint8_t registerAddress)
 {
-  if (_csPin != NOT_SPI)
-  {
-    return readByteSPI(registerAddress);
-  }
-  else
-  {
     return readByteWire(deviceAddress, registerAddress);
-  }
 }
 
 // Read a byte from the given register address from device using I2C
 uint8_t MPU9250::readByteWire(uint8_t deviceAddress, uint8_t registerAddress)
 {
-  uint8_t data; // `data` will store the register data
+//  uint8_t data; // `data` will store the register data
+//
+//  // Initialize the Tx buffer
+//  Wire.beginTransmission(deviceAddress);
+//  // Put slave register address in Tx buffer
+//  Wire.write(registerAddress);
+//  // Send the Tx buffer, but send a restart to keep connection alive
+//  Wire.endTransmission(false);
+//  // Read one byte from slave register address
+//  Wire.requestFrom(deviceAddress, (uint8_t) 1);
+//  // Fill Rx buffer with result
+//  data = Wire.read();
+//  // Return data read from slave register
+//  return data;
 
-  // Initialize the Tx buffer
-  Wire.beginTransmission(deviceAddress);
-  // Put slave register address in Tx buffer
-  Wire.write(registerAddress);
-  // Send the Tx buffer, but send a restart to keep connection alive
-  Wire.endTransmission(false);
-  // Read one byte from slave register address
-  Wire.requestFrom(deviceAddress, (uint8_t) 1);
-  // Fill Rx buffer with result
-  data = Wire.read();
-  // Return data read from slave register
-  return data;
+  return I2CReceive(deviceAddress, registerAddress);
 }
 
-// Read a byte from the given register address using SPI
-uint8_t MPU9250::readByteSPI(uint8_t registerAddress)
-{
-  return writeByteSPI(registerAddress | READ_FLAG, 0xFF /*0xFF is arbitrary*/);
-}
+
+
+
 
 // Read 1 or more bytes from given register and device using I2C
-uint8_t MPU9250::readBytesWire(uint8_t deviceAddress, uint8_t registerAddress,
-                        uint8_t count, uint8_t * dest)
+uint8_t MPU9250::readBytesWire(uint8_t deviceAddress, uint8_t registerAddress, uint8_t count, uint8_t * dest)
 {
-  // Initialize the Tx buffer
-  Wire.beginTransmission(deviceAddress);
-  // Put slave register address in Tx buffer
-  Wire.write(registerAddress);
-  // Send the Tx buffer, but send a restart to keep connection alive
-  Wire.endTransmission(false);
-
   uint8_t i = 0;
-  // Read bytes from slave register address
-  Wire.requestFrom(deviceAddress, count);
-  while (Wire.available())
-  {
-    // Put read results in the Rx buffer
-    dest[i++] = Wire.read();
-  }
 
+  while (registerAddress < (registerAddress + count)){
+	  dest[i++] = I2CReceive(deviceAddress, registerAddress);
+	  registerAddress++;
+  }
   return i; // Return number of bytes written
 }
 
-// Select slave IC by asserting CS pin
-void MPU9250::select()
+
+uint8_t MPU9250::readBytes(uint8_t deviceAddress, uint8_t registerAddress, uint8_t count, uint8_t * dest)
 {
-  digitalWrite(_csPin, LOW);
-}
-
-// Select slave IC by deasserting CS pin
-void MPU9250::deselect()
-{
-  digitalWrite(_csPin, HIGH);
-}
-
-uint8_t MPU9250::readBytesSPI(uint8_t registerAddress, uint8_t count,
-                           uint8_t * dest)
-{
-  SPI.beginTransaction(SPISettings(SPI_DATA_RATE, MSBFIRST, SPI_MODE));
-  select();
-
-  SPI.transfer(registerAddress | READ_FLAG);
-
-  uint8_t i;
-
-  for (i = 0; i < count; i++)
-  {
-    dest[i] = SPI.transfer(0x00);
-#ifdef SERIAL_DEBUG
-    UARTprintf("readBytesSPI::Read byte: 0x%X\n", dest[i]);
-    //Serial.print("readBytesSPI::Read byte: 0x");
-    //Serial.println(dest[i], HEX);
-#endif
-  }
-
-  SPI.endTransaction();
-  deselect();
-
-  delay(50);
-
-  return i; // Return number of bytes written
-
-  /*
-#ifdef SERIAL_DEBUG
-  Serial.print("MPU9250::writeByteSPI slave returned: 0x");
-  Serial.println(returnVal, HEX);
-#endif
-  return returnVal;
-  */
-
-  /*
-  // Set slave address of AK8963 and set AK8963 for read
-  writeByteSPI(I2C_SLV0_ADDR, AK8963_ADDRESS | READ_FLAG);
-
-Serial.print("\nBHW::I2C_SLV0_ADDR set to: 0x");
-Serial.println(readByte(MPU9250_ADDRESS, I2C_SLV0_ADDR), HEX);
-
-  // Set address to start read from
-  writeByteSPI(I2C_SLV0_REG, registerAddress);
-  // Read bytes from magnetometer
-  //
-Serial.print("\nBHW::I2C_SLV0_CTRL gets 0x");
-Serial.println(READ_FLAG | count, HEX);
-
-  // Read count bytes from registerAddress via I2C_SLV0
-  Serial.print("BHW::readBytesSPI: return value test: ");
-  Serial.println(writeByteSPI(I2C_SLV0_CTRL, READ_FLAG | count));
-  */
-}
-
-uint8_t MPU9250::readBytes(uint8_t deviceAddress, uint8_t registerAddress,
-                        uint8_t count, uint8_t * dest)
-{
-  if (_csPin == NOT_SPI)  // Read via I2C
-  {
     return readBytesWire(deviceAddress, registerAddress, count, dest);
-  }
-  else  // Read using SPI
-  {
-    return readBytesSPI(registerAddress, count, dest);
-  }
 }
 
 bool MPU9250::magInit()
@@ -931,19 +811,11 @@ bool MPU9250::magInit()
   // TODO: Remove this code
   uint8_t ret = ak8963WhoAmI_SPI();
 #ifdef SERIAL_DEBUG
-  UARTprintf("MPU9250::magInit to return ")
+  UARTprintf("MPU9250::magInit to return ");
   //Serial.print("MPU9250::magInit to return ");
-  Serial.println((ret == 0x48) ? "true" : "false");
+  UARTprintf((ret == 0x48) ? "true\n" : "false\n");
 #endif
   return ret == 0x48;
-}
-
-// Write a null byte w/o CS assertion to get SPI hardware to idle high (mode 3)
-void MPU9250::kickHardware()
-{
-  SPI.beginTransaction(SPISettings(SPI_DATA_RATE, MSBFIRST, SPI_MODE));
-  SPI.transfer(0x00); // Send null byte
-  SPI.endTransaction();
 }
 
 bool MPU9250::begin()
@@ -962,12 +834,9 @@ uint8_t MPU9250::ak8963WhoAmI_SPI()
   oldSlaveRegister = readByteSPI(I2C_SLV0_REG);
   oldSlaveConfig   = readByteSPI(I2C_SLV0_CTRL);
 #ifdef SERIAL_DEBUG
-  Serial.print("Old slave address: 0x");
-  Serial.println(oldSlaveAddress, HEX);
-  Serial.print("Old slave register: 0x");
-  Serial.println(oldSlaveRegister, HEX);
-  Serial.print("Old slave config: 0x");
-  Serial.println(oldSlaveConfig, HEX);
+  UARTprintf("Old slave address: 0x%X\n", oldSlaveAddress);
+  UARTprintf("Old slave register: 0x%X\n", oldSlaveRegister);
+  UARTprintf("Old slave config: 0x%X\n", oldSlaveConfig);
 #endif
 
   // Set the I2C slave addres of AK8963 and set for read

@@ -32,7 +32,7 @@
 
 accel_t accel;
 
-void InitializeAccel(){
+void InitializeAccel_old(){
 	uint8_t c;
 	I2CWrite(MPU9250_ADDRESS, PWR_MGMT_1, 0x00);	//Reset the accelerometer
 	wait(100);
@@ -66,7 +66,7 @@ void InitializeAccel(){
 }
 
 //Initializes the accelerometer with 4g or 2g range.
-void InitializeAccel2(){
+void InitializeAccel(){
 	I2CWrite(MPU9250_ADDRESS, PWR_MGMT_1, 0x00);	//Reset the accelerometer
 	wait(100);
     I2CWrite(MPU9250_ADDRESS, PWR_MGMT_1, 0x01);	//Turn everything on in PWR_MGMT_1
