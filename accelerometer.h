@@ -15,6 +15,8 @@
 #define GYRO_XOUT_H 0x43
 #define GYRO_XOUT_L 0x44
 
+#define GYRO_CONFIG 0x1B
+
 #ifndef ACCELEROMETER_H_
 #define ACCELEROMETER_H_
 

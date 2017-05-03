@@ -75,20 +75,19 @@ int main(void)
     pid_initialize();
 
     // initialize pwm timer
-    //TimerStart();		// timer for the ultrasonic altitude loop
-    TimerStart2();		// timer for the accelerometer leveling loop
+    //AltitudeTimerStart();		// timer for the ultrasonic altitude loop
+    LevelingTimerStart();		// timer for the accelerometer leveling loop
+    update_motors();
 
     // Testing Loop
     while(1)
     {
-    	terminal();
-    	//PrintAccel();	//prints out accelerometer data
-    	//PrintAccelWhoAmI();
+    	//UARTprintf("hello!");
+    	//terminal();
+    //PrintAccel();	//prints out accelerometer data
+    //	PrintAccelWhoAmI();
 
-        //wait(18000);
+    wait(18000);
         //UARTCharPut(UART0_BASE, '\n');
     }
 }
-
-
-

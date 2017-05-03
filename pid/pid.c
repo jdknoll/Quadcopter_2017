@@ -13,7 +13,7 @@
 #define PGAIN  .001
 #define IGAIN  .001
 #define DGAIN  0
-#define CTICKS 6000000	//2000000
+#define CTICKS 700000	//2000000
 
 t_PID altitude_pid;
 t_PID leveling_x_pid;
@@ -50,10 +50,10 @@ void pid_initialize()
     leveling_y_pid.set_point = 0;
     leveling_y_pid.clock_ticks = CTICKS; 		//20000000
 
-    pwm.motor0 = MIN_MOTOR_SPEED + 300;
-    pwm.motor1 = MIN_MOTOR_SPEED + 300;
-    pwm.motor2 = MIN_MOTOR_SPEED + 300;
-    pwm.motor3 = MIN_MOTOR_SPEED + 300;
+    pwm.motor0 = MIN_MOTOR_SPEED + 400;
+    pwm.motor1 = MIN_MOTOR_SPEED + 400;
+    pwm.motor2 = MIN_MOTOR_SPEED + 400;
+    pwm.motor3 = MIN_MOTOR_SPEED + 400;
 }
 
 double pwm_saturate_add(double a, double b){
