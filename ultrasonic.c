@@ -45,7 +45,7 @@
 #define LOW 0
 
 #define TRIGGER_HIGH_TIME 800
-#define TRIGGER_LOW_TIME 1892800 //Guarantees that the times shouldn't overlap old value: 1999200
+#define TRIGGER_LOW_TIME 20000000 //Guarantees that the times shouldn't overlap old value: 1999200
 
 int range_cm;
 double distance_mm;

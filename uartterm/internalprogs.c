@@ -15,7 +15,7 @@
 #include "terminal.h"
 #include "t_uart.h"
 #include "../motor_pwm.h"
-#include "../pid/altitude_pid.h"
+#include "../pid/pid.h"
 #include "../ultrasonic.h"
 
 
@@ -59,7 +59,7 @@ void matlab_pwm(char *pwm0, char *pwm1, char *pwm2, char *pwm3) {
 	int pwm2_int = atoi(pwm2);
 	int pwm3_int = atoi(pwm3);
 
-	if ((pwm0_int >= 5000) || (pwm1_int >= 5000) || (pwm2_int >= 5000) || (pwm3_int >= 5000)){
+	if ((pwm0_int >= MAX_MOTOR_SPEED) || (pwm1_int >= MAX_MOTOR_SPEED) || (pwm2_int >= MAX_MOTOR_SPEED) || (pwm3_int >= MAX_MOTOR_SPEED)){
 		return;
 	}
 
@@ -76,7 +76,7 @@ void matlab_pwm(char *pwm0, char *pwm1, char *pwm2, char *pwm3) {
 void pwm_all(char *pwm_value){
 	int pwm_int = atoi(pwm_value);
 
-	if (pwm_int >= 5000){
+	if (pwm_int >= MAX_MOTOR_SPEED){
 			return;
 	}
 	pwm.motor0 = pwm_int;
@@ -94,43 +94,43 @@ void matlab_req(){
 
 void print_setup(){
 	UARTprintf("\n");
-	UARTprintf("set_point (mm):      %d\n", (int)altitude_pid.set_point);
-	UARTprintf("proportional*1000:   %d\n", (int)(altitude_pid.p_gain*1000));
-	UARTprintf("integral*1000:       %d\n", (int)(altitude_pid.i_gain*1000));
-	UARTprintf("derivative*10000000:   %d\n", (int)(altitude_pid.d_gain*10000000));
-	UARTprintf("windup guard:        %d\n", (int)altitude_pid.windup_guard);
+	UARTprintf("set_point (mm):      %d\n", (int)leveling_x_pid.set_point);
+	UARTprintf("proportional*10000:  %d\n", (int)(leveling_x_pid.p_gain*10000));
+	UARTprintf("integral*10000:      %d\n", (int)(leveling_x_pid.i_gain*10000));
+	UARTprintf("derivative*10000000: %d\n", (int)(leveling_x_pid.d_gain*10000000));
+	UARTprintf("windup guard:        %d\n", (int)leveling_x_pid.windup_guard);
 }
 
 // set the height point
 void set_point(char *set_point){
-	altitude_pid.set_point = atoi(set_point)*10;
+	leveling_x_pid.set_point = atoi(set_point)*10;
 	print_setup();
 }
 
 // set the proportional
 void set_p(char *set_p){
-	altitude_pid.p_gain = (double)atoi(set_p)/1000;
+	leveling_x_pid.p_gain = (double)atoi(set_p)/10000;
 	print_setup();
 }
 
 // set the integer value
 void set_i(char *set_i){
-	altitude_pid.i_gain = (double)atoi(set_i)/1000;
+	leveling_x_pid.i_gain = (double)atoi(set_i)/10000;
 	print_setup();
 }
 
 void set_d(char *set_d){
-	altitude_pid.d_gain = (double)atoi(set_d)/10000000;
+	leveling_x_pid.d_gain = (double)atoi(set_d)/10000000;
 	print_setup();
 }
 
 // go through the arming sequence again
 void arm() {
 	arm_the_motor();
-	pwm.motor0 = 1950;
-	pwm.motor1 = 1950;
-	pwm.motor2 = 1950;
-	pwm.motor3 = 1950;
+	pwm.motor0 = MIN_MOTOR_SPEED;
+	pwm.motor1 = MIN_MOTOR_SPEED;
+	pwm.motor2 = MIN_MOTOR_SPEED;
+	pwm.motor3 = MIN_MOTOR_SPEED;
 }
 
 // set the wind-up guard

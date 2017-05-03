@@ -112,7 +112,7 @@ void (* const g_pfnVectors[])(void) =
 	IntDefaultHandler,                      // Timer 0 subtimer A
     IntDefaultHandler,                      // Timer 0 subtimer B
 	altitude_PID_interrupt,                 // Timer 1 subtimer A
-	leveling_PID_interrupt,                 // Timer 1 subtimer B
+	IntDefaultHandler,                      // Timer 1 subtimer B
 	ultrasonicTriggerTimerHandler,          // Timer 2 subtimer A
     IntDefaultHandler,                      // Timer 2 subtimer B
     IntDefaultHandler,                      // Analog Comparator 0
@@ -160,7 +160,7 @@ void (* const g_pfnVectors[])(void) =
     0,                                      // Reserved
     IntDefaultHandler,                      // I2C2 Master and Slave
     IntDefaultHandler,                      // I2C3 Master and Slave
-    IntDefaultHandler,                      // Timer 4 subtimer A
+	leveling_PID_interrupt,                 // Timer 4 subtimer A
     IntDefaultHandler,                      // Timer 4 subtimer B
     0,                                      // Reserved
     0,                                      // Reserved

@@ -1,6 +1,4 @@
 
-#include "altitude_pid.h"
-
 #include <stdbool.h>
 #include <math.h>
 #include <stdio.h>
@@ -9,12 +7,13 @@
 #include "../motor_pwm.h"
 #include "../ultrasonic.h"
 #include "../uartterm/t_uart.h"
+#include "pid.h"
 
 #define WINDUP 200
-#define PGAIN  .023
-#define IGAIN  .004
-#define DGAIN  .0000002
-#define FREQ   200000
+#define PGAIN  .001
+#define IGAIN  .001
+#define DGAIN  0
+#define CTICKS 700000	//2000000
 
 t_PID altitude_pid;
 t_PID leveling_x_pid;
@@ -31,7 +30,7 @@ void pid_initialize()
     altitude_pid.i_gain = .004;			// keep i less than p - integral value
     altitude_pid.d_gain = .0000002;
     altitude_pid.set_point = 0;//100;
-    altitude_pid.freq = 1894000; 		//20000000
+    altitude_pid.clock_ticks = 1894000; 		//20000000
 
     leveling_x_pid.prev_error = 0;
     leveling_x_pid.int_error = 0;
@@ -39,8 +38,8 @@ void pid_initialize()
     leveling_x_pid.p_gain = PGAIN;			// p is more aggresive - scalar value
     leveling_x_pid.i_gain = IGAIN;			// keep i less than p - integral value
     leveling_x_pid.d_gain = DGAIN;
-    leveling_x_pid.set_point = 0;//100;
-    leveling_x_pid.freq = FREQ; 		//20000000
+    leveling_x_pid.set_point = 0;
+    leveling_x_pid.clock_ticks = CTICKS; 		//20000000
 
     leveling_y_pid.prev_error = 0;
     leveling_y_pid.int_error = 0;
@@ -48,21 +47,21 @@ void pid_initialize()
     leveling_y_pid.p_gain = PGAIN;			// p is more aggresive - scalar value
     leveling_y_pid.i_gain = IGAIN;			// keep i less than p - integral value
     leveling_y_pid.d_gain = DGAIN;
-    leveling_y_pid.set_point = 0;//100;
-    leveling_y_pid.freq = FREQ; 		//20000000
+    leveling_y_pid.set_point = 0;
+    leveling_y_pid.clock_ticks = CTICKS; 		//20000000
 
-    pwm.motor0 = 1950;
-    pwm.motor1 = 1950;
-    pwm.motor2 = 1950;
-    pwm.motor3 = 1950;
+    pwm.motor0 = MIN_MOTOR_SPEED + 400;
+    pwm.motor1 = MIN_MOTOR_SPEED + 400;
+    pwm.motor2 = MIN_MOTOR_SPEED + 400;
+    pwm.motor3 = MIN_MOTOR_SPEED + 400;
 }
 
 double pwm_saturate_add(double a, double b){
 	double output = a + b;
-	if(output > 2250){
-		return 2250;
-	} else  if (output < 1950){
-		return 1950;
+	if(output > MAX_MOTOR_SPEED){
+		return MAX_MOTOR_SPEED;
+	} else  if (output < MIN_MOTOR_SPEED){
+		return MIN_MOTOR_SPEED;
 	} else {
 		return output;
 	}
@@ -80,10 +79,10 @@ void pid_update(double curr_error, double dt, t_PID * pid, int mode)
 
     if (pid->int_error < -(pid->windup_guard)) {
     	pid->int_error = -(pid->windup_guard);
-    	UARTprintf("Windup low\n");
+    	//UARTprintf("Windup low\n");
     } else if (pid->int_error > pid->windup_guard){ // integral windup control
     	pid->int_error = pid->windup_guard;
-    	UARTprintf("Windup high\n");
+    	//UARTprintf("Windup high\n");
     }
 
     // differentiation

@@ -23,10 +23,9 @@
 #include "driverlib/sysctl.h"
 
 #include "I2C.h"
-#include "accelerometer/accelerometer.h"
-#include "accelerometer/accelerometer2.h"
+#include "accelerometer.h"
 #include "motor_pwm.h"
-#include "pid/altitude_pid.h"
+#include "pid/pid.h"
 #include "uartterm/t_uart.h"
 #include "ultrasonic.h"
 #include "uartterm/terminal.h"
@@ -51,21 +50,19 @@ int main(void)
     pwm_configuration();
 
     // arms the motor for start
-    //arm_the_motor();
+    arm_the_motor();
 
     // initialize the UART
     initUART();
 
     // Initialize the I2C1 interface
-    //initI2C1();
+    initI2C1();
 
     // Initialize the Accelerometer
-    //InitializeAccel();
-    //AccelSelfTest();
-    initializeAccelADC();
+    InitializeAccel();
 
     // Print out the WHO_AM_I register
-    //PrintAccelWhoAmI();
+    PrintAccelWhoAmI();
 
     // Print the accelerometer's configuration bits
     //PrintAccelConfigReg();
@@ -78,18 +75,19 @@ int main(void)
     pid_initialize();
 
     // initialize pwm timer
-    //TimerStart();		// timer for the ultrasonic altitude loop
-    //TimerStart2();		// timer for the accelerometer leveling loop
+    //AltitudeTimerStart();		// timer for the ultrasonic altitude loop
+    LevelingTimerStart();		// timer for the accelerometer leveling loop
+    update_motors();
 
     // Testing Loop
     while(1)
     {
-    		queryAccel2();
-    		//terminal();
-    		//QueryAccel();	//prints out accelerometer data
-    		//PrintAccelWhoAmI();
+    	//UARTprintf("hello!");
+    	//terminal();
+    //PrintAccel();	//prints out accelerometer data
+    //	PrintAccelWhoAmI();
 
-        wait(100000);
+    wait(18000);
         //UARTCharPut(UART0_BASE, '\n');
     }
 }
