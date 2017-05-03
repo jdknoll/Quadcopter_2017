@@ -46,6 +46,7 @@ void InitializeAccel(){
     //Get current ACCEL_CONFIG register value
     c = I2CReceive(MPU9250_ADDRESS, ACCEL_CONFIG);
     c = c & ~0x18;									//clear AFS bits
+    c = c | 0x00 << 2; // Set full scale range for the accelerometer
     I2CWrite(MPU9250_ADDRESS, ACCEL_CONFIG, c);
     //Get the current ACCEL_CONFIG2 value
     c = I2CReceive(MPU9250_ADDRESS, ACCEL_CONFIG2);
@@ -93,14 +94,14 @@ void InitializeAccel2(){
     //Get current ACCEL_CONFIG register value
     c = I2CReceive(MPU9250_ADDRESS, ACCEL_CONFIG);
     c = c & ~0x18;									//clear AFS bits
-	c = c | 0 << 3; // Set full scale range for the accelerometer
+	c = c | 0x00 << 3; // Set full scale range for the accelerometer
     I2CWrite(MPU9250_ADDRESS, ACCEL_CONFIG, c);
 
     //Get the current ACCEL_CONFIG2 value
     c = I2CReceive(MPU9250_ADDRESS, ACCEL_CONFIG2);
     c = c & ~0x0F; 									// clear accel_fchoice_b and A_DLPFG bits
     //c = c | 0x04;									// turn on the accel_fchoice_b bit
-    c = c | 0x03;									// set the sample rate to 1khz
+    c = c | 0x01;									// set the sample rate to 1khz
     I2CWrite(MPU9250_ADDRESS, ACCEL_CONFIG2, c);
 
     // //set SBYB (bit 0) to 1
