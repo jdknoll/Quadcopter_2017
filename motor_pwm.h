@@ -30,8 +30,8 @@ void altitude_PID_interrupt();
 void leveling_PID_interrupt();
 void arm_the_motor();
 void pwm_configuration();
-void TimerStart();
-void TimerStart2();
+void AltitudeTimerStart();
+void LevelingTimerStart();
 void update_motors();
 
 typedef struct {

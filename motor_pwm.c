@@ -35,6 +35,14 @@
 #include "I2C.h"
 #include "pid/pid.h"
 
+#define DEBUG_PWM
+
+#ifdef DEBUG_PWM
+#define DBPRINTF(y,...) UARTprintf(y,__VA_ARGS__)
+#else
+#define DBPRINTF(...)
+#endif
+
 t_PWM pwm;
 
 void delayMS(int ms)
@@ -120,7 +128,7 @@ void arm_the_motor()
     ROM_IntMasterEnable();
 }
 
-void TimerStart()
+void AltitudeTimerStart()
 {
   ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER1);
   /*
@@ -173,19 +181,16 @@ void altitude_PID_interrupt()
     // Sets the adjusted speed to the PWM pins
 	update_motors();
 	//ROM_TimerIntEnable(TIMER4_BASE, TIMER_TIMA_TIMEOUT);
-		
-	#ifdef _DEBUG_MODE
-    UARTprintf("PID Control: %d\n", pid.control);
-    UARTprintf("PWM_motor0 %d\n", (int)pid.PWM_motor0);
-    UARTprintf("Distance cm: %d\n", (int)distance_cm);
-    UARTprintf("Error: %d\n", (int)error);
-	#endif
+
+    DBPRINTF("PWM_motor0 %d\n", (int)pwm.motor0);
+    DBPRINTF("Distance mm: %d\n", (int)distance_mm);
+    DBPRINTF("Error: %d\n", (int)error);
 }
 
 #define LEVELING_TIMER_INT		INT_TIMER4A
 #define LEVELING_TIMER_BASE 		TIMER4_BASE
 
-void TimerStart2()
+void LevelingTimerStart()
 {
   ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER4);
 
@@ -228,7 +233,6 @@ void leveling_PID_interrupt()
     //pid_update(y_error, timescale, &leveling_y_pid, LEVELING_Y_MODE);
 
     // Sets the adjusted speed to the PWM pins
-	update_motors();
+	//update_motors();
     //ROM_TimerIntEnable(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
 }
-
