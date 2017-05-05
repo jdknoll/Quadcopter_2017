@@ -68,15 +68,15 @@ int main(void)
     //PrintAccelConfigReg();
 
     // Initialize the GPIO for the sonic distance
-    //initialize_ultrasonic();
-    //wait(100000);
+    initialize_ultrasonic();
+    wait(100000);
 
     // Initialize the PID and PWM struct values
     pid_initialize();
 
     // initialize pwm timer
-    //AltitudeTimerStart();		// timer for the ultrasonic altitude loop
-    LevelingTimerStart();		// timer for the accelerometer leveling loop
+    AltitudeTimerStart();		// timer for the ultrasonic altitude loop
+    //LevelingTimerStart();		// timer for the accelerometer leveling loop
     update_motors();
 
     // Testing Loop

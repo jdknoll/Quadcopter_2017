@@ -135,9 +135,9 @@ void QueryAccel(){
 
 
 	accel.x = (I2CReceive(MPU9250_ADDRESS, 0x3B) << 8) + I2CReceive(MPU9250_ADDRESS, 0x3C);
-	DBPRINTF("%d\n", accel.x);
-    //accel.y = (I2CReceive(MPU9250_ADDRESS, 0x3D) << 8) + I2CReceive(MPU9250_ADDRESS, 0x3E);
-    //DBPRINTF("%20d\n", accel.y);
+	DBPRINTF("X accelerometer value: %d\n", accel.x);
+    accel.y = (I2CReceive(MPU9250_ADDRESS, 0x3D) << 8) + I2CReceive(MPU9250_ADDRESS, 0x3E);
+    DBPRINTF("Y accelerometer value: %d\n\n", accel.y);
     //accel.z = (I2CReceive(MPU9250_ADDRESS, 0x3F) << 8) + I2CReceive(MPU9250_ADDRESS, 0x40);
 }
 

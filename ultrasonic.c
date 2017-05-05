@@ -23,6 +23,15 @@
 #include "inc/hw_timer.h"
 #include "config.h"
 
+
+#define DEBUG_ULTRASONIC
+
+#ifdef DEBUG_ULTRASONIC
+#define DBPRINTF(y,...) UARTprintf(y,__VA_ARGS__)
+#else
+#define DBPRINTF(...)
+#endif
+
 #define TRIGGER_TIMER_FREQ 20000000
 
 #define TRIGGER_PIN 				GPIO_PIN_1
@@ -34,7 +43,7 @@
 
 #define ECHO_PIN 				GPIO_INT_PIN_2
 #define ECHO_BASE 				GPIO_PORTD_BASE
-#define ECHO_PERIPHERAL			SYSCTL_PERIPH_GPIOC
+#define ECHO_PERIPHERAL			SYSCTL_PERIPH_GPIOD
 
 #define ECHO_TIMER_BASE			TIMER5_BASE
 #define ECHO_TIMER_PERIPHERAL	SYSCTL_PERIPH_TIMER5
@@ -75,7 +84,7 @@ void ultrasonicTriggerTimerHandler(void)
         ROM_TimerLoadSet(TRIGGER_TIMER_BASE, TRIGGER_TIMER, TRIGGER_LOW_TIME); // calculated to guarantee that trigger shouldn't run while echo is high: 1892800
         ROM_TimerEnable(TRIGGER_TIMER_BASE, TRIGGER_TIMER);
 
-        ROM_GPIOPinWrite(GPIO_PORTD_BASE, TRIGGER_PIN, 1);
+        ROM_GPIOPinWrite(GPIO_PORTD_BASE, TRIGGER_PIN, 0);
         trigger_status = ~trigger_status;
     }
 }
@@ -86,9 +95,7 @@ void distance_calculations(uint32_t clock_timer)
     //formula given by the ultrasonic data sheet for centimeters
     distance_mm = ((double)clock_timer/8)/58;
 
-	#ifdef _MATLAB_OUT
-    UARTprintf("%s\n", (int)distance_mm);						// This line will need to be un-commented for MatLab
-	#endif
+    DBPRINTF("%d\n", (int)distance_mm);
 }
 
 
@@ -151,6 +158,6 @@ void initialize_ultrasonic()
     GPIOIntEnable(ECHO_BASE, ECHO_PIN);
     GPIOIntClear(ECHO_BASE, ECHO_PIN);  // Clear interrupt flag
 
-    ROM_IntEnable(INT_GPIOC);
-    ROM_IntPrioritySet(INT_GPIOC, INT_PRIORITY_LEVEL_1);	// set the priority lower than the pwm
+    ROM_IntEnable(INT_GPIOD);
+    ROM_IntPrioritySet(INT_GPIOD, INT_PRIORITY_LEVEL_1);	// set the priority lower than the pwm
 }

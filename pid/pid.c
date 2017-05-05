@@ -29,7 +29,7 @@ void pid_initialize()
     altitude_pid.p_gain = .023;			// p is more aggresive - scalar value
     altitude_pid.i_gain = .004;			// keep i less than p - integral value
     altitude_pid.d_gain = .0000002;
-    altitude_pid.set_point = 0;//100;
+    altitude_pid.set_point = 300;//100;
     altitude_pid.clock_ticks = 1894000; 		//20000000
 
     leveling_x_pid.prev_error = 0;

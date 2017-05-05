@@ -92,8 +92,8 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // The SysTick handler
     IntDefaultHandler,                      // GPIO Port A
     IntDefaultHandler,                      // GPIO Port B
-	ultrasonicEchoHandler,                  // GPIO Port C
-	IntDefaultHandler,                  	// GPIO Port D
+	IntDefaultHandler,                  	   // GPIO Port C
+	ultrasonicEchoHandler,                  // GPIO Port D
     IntDefaultHandler,                      // GPIO Port E
     UARTIntHandler,                         // UART0 Rx and Tx
     IntDefaultHandler,                      // UART1 Rx and Tx

@@ -233,6 +233,6 @@ void leveling_PID_interrupt()
     //pid_update(y_error, timescale, &leveling_y_pid, LEVELING_Y_MODE);
 
     // Sets the adjusted speed to the PWM pins
-	//update_motors();
+	update_motors();
     //ROM_TimerIntEnable(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
 }

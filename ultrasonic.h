@@ -13,7 +13,6 @@
 void ultrasonicTriggerTimerHandler(void);
 void ultrasonicEchoHandler(void);
 void initialize_ultrasonic();
-void distance_calculations(uint32_t clock_timer);
 
 extern double distance_mm;		//current height of quadcopter
 extern char distance_string[50];
