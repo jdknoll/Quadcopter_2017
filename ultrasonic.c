@@ -89,7 +89,7 @@ void ultrasonicTriggerTimerHandler(void)
     }
 }
 
-
+//TODO: do a sanity check on the distance before writing the values
 void distance_calculations(uint32_t clock_timer)
 {
     //formula given by the ultrasonic data sheet for centimeters

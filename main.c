@@ -87,6 +87,7 @@ int main(void)
     //PrintAccel();	//prints out accelerometer data
     //	PrintAccelWhoAmI();
 
+
     wait(18000);
         //UARTCharPut(UART0_BASE, '\n');
     }
